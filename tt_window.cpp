@@ -708,13 +708,13 @@ TtWindow::Move( int x, int y, int width, int height, bool do_repaint )
 }
 
 void
-TtWindow::SetCenterRelativeToParent( void )
+TtWindow::SetCenterRelativeTo( TtWindow& reference )
 {
-  RECT parent_rect = parent_->GetRectangle();
+  RECT ref_rect = reference.GetRectangle();
   RECT this_rect = this->GetRectangle();
   TtWindow& desktop = TtExtraordinarilyWindow::Desktop;
 
-  int x = (parent_rect.right + parent_rect.left) / 2 - (this_rect.right - this_rect.left) / 2;
+  int x = (ref_rect.right + ref_rect.left) / 2 - (this_rect.right - this_rect.left) / 2;
   if ( x < 0 ) {
     x = 0;
   }
@@ -722,7 +722,7 @@ TtWindow::SetCenterRelativeToParent( void )
     x = desktop.GetRectangle().right - this->GetWidth();
   }
 
-  int y = (parent_rect.bottom + parent_rect.top) / 2 - (this_rect.bottom - this_rect.top) / 2;
+  int y = (ref_rect.bottom + ref_rect.top) / 2 - (this_rect.bottom - this_rect.top) / 2;
   if ( y < 0 ) {
     y = 0;
   }
@@ -731,6 +731,13 @@ TtWindow::SetCenterRelativeToParent( void )
   }
 
   this->SetPosition( x, y );
+}
+
+
+void
+TtWindow::SetCenterRelativeToParent( void )
+{
+  this->SetCenterRelativeTo( *parent_ );
 }
 
 

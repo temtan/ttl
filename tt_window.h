@@ -180,6 +180,7 @@ public:
   void SetPositionSize( int x, int y, int width, int height );
   void SetRectangle( RECT rect );
   void Move( int x, int y, int width, int height, bool do_repaint );
+  void SetCenterRelativeTo( TtWindow& reference );
   void SetCenterRelativeToParent( void );
 
   void SetBottom( void );
