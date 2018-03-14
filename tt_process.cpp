@@ -138,7 +138,8 @@ create_new_process_group_( false ),
 priority_( Priority::NORMAL ),
 show_state_( TtWindow::ShowState::SHOW ),
 use_search_path_( true ),
-create_suspended_( false )
+create_suspended_( false ),
+create_new_console_( false )
 {
 }
 
@@ -193,7 +194,8 @@ TtProcess::Create( CreateInfo& info )
     info.inherit_handles_ ? TRUE : FALSE,
     info.priority_.ToInteger() |
     (info.create_new_process_group_ ? CREATE_NEW_PROCESS_GROUP : 0) |
-    (info.create_suspended_ ? CREATE_SUSPENDED : 0 ),
+    (info.create_suspended_         ? CREATE_SUSPENDED         : 0) |
+    (info.create_new_console_       ? CREATE_NEW_CONSOLE       : 0),
     nullptr,
     info.current_directory_.c_str(),
     &startup_info,

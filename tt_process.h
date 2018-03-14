@@ -75,6 +75,7 @@ public:
     TtEnum<TtWindow::ShowState> show_state_;
     bool                        use_search_path_;
     bool                        create_suspended_;
+    bool                        create_new_console_;
   };
 
   // -- TtProcess --------------------------------------------------------
