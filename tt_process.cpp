@@ -177,10 +177,12 @@ TtProcess::Create( CreateInfo& info )
   startup_info.cb = sizeof( startup_info );
   startup_info.dwFlags |= STARTF_USESHOWWINDOW;
   startup_info.wShowWindow = static_cast<WORD>( info.show_state_ );
-  startup_info.dwFlags |= STARTF_USESTDHANDLES;
-  startup_info.hStdInput  = info.standard_input_.GetWindowsHandle();
-  startup_info.hStdOutput = info.standard_output_.GetWindowsHandle();
-  startup_info.hStdError  = info.standard_error_.GetWindowsHandle();
+  if ( info.use_standard_handles_ ) {
+    startup_info.dwFlags |= STARTF_USESTDHANDLES;
+    startup_info.hStdInput  = info.standard_input_.GetWindowsHandle();
+    startup_info.hStdOutput = info.standard_output_.GetWindowsHandle();
+    startup_info.hStdError  = info.standard_error_.GetWindowsHandle();
+  }
 
   PROCESS_INFORMATION proc = {INVALID_HANDLE_VALUE};
 

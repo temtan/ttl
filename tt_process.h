@@ -67,6 +67,7 @@ public:
     std::string                 arguments_;
     std::string                 current_directory_;
     bool                        inherit_handles_;
+    bool                        use_standard_handles_;
     TtPipe::Handle              standard_input_;
     TtPipe::Handle              standard_output_;
     TtPipe::Handle              standard_error_;
