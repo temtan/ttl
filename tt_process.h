@@ -58,48 +58,11 @@ public:
 
   // -- CreateInfo --------------------------------------------------------
   class CreateInfo {
-    friend class TtProcess;
   public:
     explicit CreateInfo( void );
     explicit CreateInfo( const std::string& filename );
 
-    void SetFileName( const std::string& filename );
-    const std::string& GetFileName( void ) const;
-
-    void SetArguments( const std::string& arg );
-    const std::string& GetArguments( void ) const;
-
-    void SetCurrentDirectory( const std::string& path );
-    const std::string& GetCurrentDirectory( void ) const;
-
-    void SetInheritHandles( bool flag );
-    bool GetInheritHandles( void ) const;
-
-    void SetStandardInput( TtPipe::Handle handle );
-    TtPipe::Handle GetStandardInput( void ) const;
-
-    void SetStandardOutput( TtPipe::Handle handle );
-    TtPipe::Handle GetStandardOutput( void ) const;
-
-    void SetStandardError( TtPipe::Handle handle );
-    TtPipe::Handle GetStandardError( void ) const;
-
-    void SetCreateNewProcessGroup( bool flag );
-    bool GetCreateNewProcessGroup( void ) const;
-
-    void SetPriority( TtEnum<Priority> priority );
-    TtEnum<Priority> GetPriority( void ) const;
-
-    void SetShowState( TtEnum<TtWindow::ShowState> state );
-    TtEnum<TtWindow::ShowState> GetShowState( void ) const;
-
-    void SetUseSearchPath( bool flag );
-    bool GetUseSearchPath( void ) const;
-
-    void SetCreateSuspended( bool flag );
-    bool GetCreateSuspended( void ) const;
-
-  private:
+  public:
     std::string                 filename_;
     std::string                 arguments_;
     std::string                 current_directory_;
