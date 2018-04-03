@@ -34,7 +34,7 @@
 #  define PCP( p )         PCA( "%p", p )
 #  define PCS( s )         PCA( "%s", s )
 #  define PCF( f )         PCA( "%f", f )
-#  define PCLL( l )        PCA( "%lld" l )
+#  define PCLL( l )        PCA( "%lld", l )
 #  define PCSS( s )        (printf( "%s(%d) : %s = %s\n", FILENAME__, __LINE__, #s, (s).c_str() ), fflush( stdout ))
 
 #  include "tt_utility.h"
