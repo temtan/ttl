@@ -34,6 +34,7 @@
 #  define PCP( p )         PCA( "%p", p )
 #  define PCS( s )         PCA( "%s", s )
 #  define PCF( f )         PCA( "%f", f )
+#  define PCLL( l )        PCA( "%lld" l )
 #  define PCSS( s )        (printf( "%s(%d) : %s = %s\n", FILENAME__, __LINE__, #s, (s).c_str() ), fflush( stdout ))
 
 #  include "tt_utility.h"
@@ -45,5 +46,6 @@
 #  define PMP( p )         PMA( "%p", p )
 #  define PMS( s )         PMA( "%s", s )
 #  define PMF( f )         PMA( "%f", f )
+#  define PMLL( l )        PMA( "%lld", l )
 #  define PMSS( s )        TtUtility::MessageBoxForDebug( "%s", #s, (void*)((s).c_str()), __FILE__, __LINE__ )
 #endif
