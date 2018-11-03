@@ -25,9 +25,8 @@
 #ifdef DEBUG
 #  include <stdio.h>
 #  include <string>
-#  define FILENAME__       (__FILE__ + std::string( __FILE__ ).find_last_of( '\\' ) + 1)
-#  define PCD()            (printf( "%s(%d) : gone.\n", FILENAME__, __LINE__ ), fflush( stdout ))
-#  define PCA( type, obj ) (printf( "%s(%d) : %s = " type "\n", FILENAME__, __LINE__, #obj, (obj) ), fflush( stdout ))
+#  define PCD()            (printf( "%s(%d) : gone.\n", __FILE__, __LINE__ ), fflush( stdout ))
+#  define PCA( type, obj ) (printf( "%s(%d) : %s = " type "\n", __FILE__, __LINE__, #obj, (obj) ), fflush( stdout ))
 #  define PCC( c )         PCA( "%c", c )
 #  define PCI( i )         PCA( "%d", i )
 #  define PCX( x )         PCA( "0x%X", x )
@@ -35,11 +34,11 @@
 #  define PCS( s )         PCA( "%s", s )
 #  define PCF( f )         PCA( "%f", f )
 #  define PCLL( l )        PCA( "%lld", l )
-#  define PCSS( s )        (printf( "%s(%d) : %s = %s\n", FILENAME__, __LINE__, #s, (s).c_str() ), fflush( stdout ))
+#  define PCSS( s )        (printf( "%s(%d) : %s = %s\n", __FILE__, __LINE__, #s, (s).c_str() ), fflush( stdout ))
 
 #  include "tt_utility.h"
-#  define PMD()            TtUtility::MessageBoxForDebug( "", "gone", 0, FILENAME__, __LINE__ )
-#  define PMA( type, obj ) TtUtility::MessageBoxForDebug( type, #obj, (void*)(obj), FILENAME__, __LINE__ )
+#  define PMD()            TtUtility::MessageBoxForDebug( "", "gone", 0, __FILE__, __LINE__ )
+#  define PMA( type, obj ) TtUtility::MessageBoxForDebug( type, #obj, (void*)(obj), __FILE__, __LINE__ )
 #  define PMC( c )         PMA( "%c", c )
 #  define PMI( i )         PMA( "%d", i )
 #  define PMX( x )         PMA( "0x%X", x )
