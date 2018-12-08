@@ -140,8 +140,8 @@ TtWindow::GetSingleHandler( UINT msg )
 void
 TtWindow::OverrideWindowProcedureByTTL( void )
 {
-  window_procedure_super_ = reinterpret_cast<WNDPROC>( this->GetWindowLong( GWL_WNDPROC ) );
-  this->SetWindowLong( GWL_WNDPROC, reinterpret_cast<LONG>( TtWindow::WindowProcedureForTTL ) );
+  window_procedure_super_ = reinterpret_cast<WNDPROC>( this->GetClassLongPtr( GCLP_WNDPROC ) );
+  this->SetWindowLong( GCLP_WNDPROC, reinterpret_cast<ULONG_PTR>( TtWindow::WindowProcedureForTTL ) );
   if ( WINDOW_TABLE.Find( handle_ ) == nullptr ) {
     WINDOW_TABLE.Register( *this );
   }
@@ -373,18 +373,6 @@ TtWindow::PostMessage( UINT msg, WPARAM w_param, LPARAM l_param )
 }
 
 
-void
-TtWindow::SetWindowLong( int index, LONG value )
-{
-  TtUtility::CallWindowsSystemFunctionWithErrorHandling(
-    [&] ( void ) {
-      ::SetWindowLong( handle_, index, value );
-    },
-    [] ( void ) {
-      throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::SetWindowLong ) );
-    } );
-}
-
 LONG
 TtWindow::GetWindowLong( int index )
 {
@@ -397,6 +385,71 @@ TtWindow::GetWindowLong( int index )
       throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::GetWindowLong ) );
     } );
   return tmp;
+}
+
+void
+TtWindow::SetWindowLong( int index, LONG value )
+{
+  TtUtility::CallWindowsSystemFunctionWithErrorHandling(
+    [&] ( void ) {
+      ::SetWindowLong( handle_, index, value );
+    },
+    [] ( void ) {
+      throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::SetWindowLong ) );
+    } );
+}
+
+LONG_PTR
+TtWindow::GetWindowLongPtr( int index )
+{
+  LONG_PTR tmp;
+  TtUtility::CallWindowsSystemFunctionWithErrorHandling(
+    [&] ( void ) {
+      tmp = ::GetWindowLongPtr( handle_, index );
+    },
+    [] ( void ) {
+      throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::GetWindowLongPtr ) );
+    } );
+  return tmp;
+}
+
+void
+TtWindow::SetWindowLongPtr( int index, LONG_PTR value )
+{
+  TtUtility::CallWindowsSystemFunctionWithErrorHandling(
+    [&] ( void ) {
+      ::SetWindowLongPtr( handle_, index, value );
+    },
+    [] ( void ) {
+      throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::SetWindowLongPtr ) );
+    } );
+}
+
+
+ULONG_PTR
+TtWindow::GetClassLongPtr( int index )
+{
+  ULONG_PTR tmp;
+  TtUtility::CallWindowsSystemFunctionWithErrorHandling(
+    [&] ( void ) {
+      tmp = ::GetClassLongPtr( handle_, index );
+    },
+    [] ( void ) {
+      throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::GetClassLongPtr ) );
+    } );
+  return tmp;
+}
+
+void
+TtWindow::SetClassLongPtr( int index, LONG_PTR value )
+{
+  TtUtility::CallWindowsSystemFunctionWithErrorHandling(
+    [&] ( void ) {
+      ::SetClassLongPtr( handle_, index, value );
+    },
+    [] ( void ) {
+      throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::SetClassLongPtr ) );
+    } );
 }
 
 

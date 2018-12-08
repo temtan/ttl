@@ -17,7 +17,7 @@ public:
     friend class TtPropertySheet;
 
   private:
-    static BOOL CALLBACK WindowProcedureForTTLPropertySheetPage( HWND handle, UINT msg, WPARAM w_param, LPARAM l_param );
+    static INT_PTR CALLBACK WindowProcedureForTTLPropertySheetPage( HWND handle, UINT msg, WPARAM w_param, LPARAM l_param );
     static UINT CALLBACK ProcedureForTTLPropertySheetPage( HWND handle, UINT msg, LPPROPSHEETPAGE page );
 
   protected:

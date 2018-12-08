@@ -8,7 +8,7 @@
 // -- TtDialog -----------------------------------------------------------
 class TtDialog : public TtForm {
 protected:
-  static BOOL CALLBACK WindowProcedureForTTLDialog( HWND handle, UINT msg, WPARAM w_param, LPARAM l_param );
+  static INT_PTR CALLBACK WindowProcedureForTTLDialog( HWND handle, UINT msg, WPARAM w_param, LPARAM l_param );
 
 protected:
   virtual DWORD  GetStyle( void ) override;

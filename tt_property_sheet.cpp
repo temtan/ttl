@@ -13,7 +13,7 @@
 
 
 // -- TtPropertySheet::Page ----------------------------------------------
-BOOL CALLBACK
+INT_PTR CALLBACK
 TtPropertySheet::Page::WindowProcedureForTTLPropertySheetPage( HWND handle, UINT msg, WPARAM w_param, LPARAM l_param )
 {
   if ( msg == WM_INITDIALOG ) {
@@ -81,13 +81,13 @@ TtPropertySheet::Page::CreatedInternal( void )
 
     case PSN_KILLACTIVE:
       if ( NOT( TtUtility::Safing( handlers_.at_kill_active, true )() ) ) {
-        this->SetWindowLong( DWL_MSGRESULT, TRUE );
+        this->SetWindowLongPtr( DWLP_MSGRESULT, TRUE );
       }
       return {WMResult::Done};
 
     case PSN_APPLY:
       if ( NOT( TtUtility::Safing( handlers_.at_apply, true )() ) ) {
-        this->SetWindowLong( DWL_MSGRESULT, TRUE );
+        this->SetWindowLong( DWLP_MSGRESULT, TRUE );
       }
       return {WMResult::Done};
 

@@ -8,7 +8,7 @@
 #pragma comment(lib, "user32.lib")
 
 
-BOOL CALLBACK
+INT_PTR CALLBACK
 TtDialog::WindowProcedureForTTLDialog( HWND handle, UINT msg, WPARAM w_param, LPARAM l_param )
 {
   if ( msg == WM_INITDIALOG ) {
