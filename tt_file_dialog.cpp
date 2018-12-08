@@ -280,7 +280,7 @@ TtFileDialog::MakeStructure( OPENFILENAME& ofn )
   file_name_.copy( buffer_.GetPointer(), buffer_.GetCapacity() );
   buffer_.GetPointer()[file_name_.size() < buffer_.GetCapacity() ? file_name_.size() : buffer_.GetCapacity()] = '\0';
   ofn.lpstrFile = buffer_.GetPointer();
-  ofn.nMaxFile = buffer_.GetCapacity();
+  ofn.nMaxFile = static_cast<DWORD>( buffer_.GetCapacity() );
 
   if ( NOT( initial_directory_.empty() ) ) {
     ofn.lpstrInitialDir = initial_directory_.c_str();

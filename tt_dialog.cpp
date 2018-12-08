@@ -87,7 +87,7 @@ TtDialog::ShowDialog( TtForm& parent )
   tmp.y = 100;
   tmp.cx = 100;
   tmp.cy = 100;
-  int ret = ::DialogBoxIndirectParam(
+  INT_PTR ret = ::DialogBoxIndirectParam(
     instance_handle_, &tmp, parent.GetHandle(),
     TtDialog::WindowProcedureForTTLDialog, reinterpret_cast<LPARAM>( this ) );
   if ( ret == -1 ) {
@@ -97,7 +97,7 @@ TtDialog::ShowDialog( TtForm& parent )
     TtWindow::WINDOW_TABLE.Unregister( *this );
     handle_ = nullptr;
   }
-  return ret;
+  return static_cast<int>( ret );
 }
 
 

@@ -98,8 +98,8 @@ TtTab::Select( int index )
 void
 TtTab::RegisterTabChangeHandlersTo( TtWindow& parent )
 {
-  parent.RegisterSingleHandler( WM_NOTIFY, [this, self_id = this->GetWindowLong( GWL_ID )]( WPARAM w_param, LPARAM l_param ) -> WMResult {
-    int id = w_param;
+  parent.RegisterSingleHandler( WM_NOTIFY, [this, self_id = this->GetWindowLongPtr( GWLP_ID )]( WPARAM w_param, LPARAM l_param ) -> WMResult {
+    auto id = w_param;
     if ( id == self_id ) {
       switch ( reinterpret_cast<NMHDR*>( l_param )->code ) {
       case TCN_SELCHANGING:

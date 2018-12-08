@@ -84,7 +84,7 @@ TtPanel::CreatedInternal( void )
   }, false );
 
   this->RegisterSingleHandler( WM_NOTIFY, [this] ( WPARAM w_param, LPARAM l_param ) -> WMResult {
-    int id = w_param;
+    int id = static_cast<int>( w_param );
     NMHDR* nmhdr = reinterpret_cast<NMHDR*>( l_param );
 
     auto it = notify_table_.find( id );
@@ -125,7 +125,7 @@ void
 TtPanel::RegisterWMSize( WMSizeHandler handler, bool do_override )
 {
   this->RegisterSingleHandler( WM_SIZE, [handler]( WPARAM w_param, LPARAM l_param ) {
-    return handler( w_param, LOWORD( l_param ), HIWORD( l_param ) );
+    return handler( static_cast<int>( w_param ), LOWORD( l_param ), HIWORD( l_param ) );
   }, do_override );
 }
 
@@ -133,7 +133,7 @@ void
 TtPanel::RegisterWMSizing( WMSizingHandler handler, bool do_override )
 {
   this->RegisterSingleHandler( WM_SIZING, [handler]( WPARAM w_param, LPARAM l_param ) {
-    return handler( w_param, *reinterpret_cast<RECT*>( l_param ) );
+    return handler( static_cast<int>( w_param ), *reinterpret_cast<RECT*>( l_param ) );
   }, do_override );
 }
 

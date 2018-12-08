@@ -21,7 +21,7 @@ TtString::ToRangedStringFromVector( const std::vector<std::string>& v )
 }
 
 std::vector<std::string>
-TtString::ToVectorFromRangedString( const char* buf, unsigned int buf_size )
+TtString::ToVectorFromRangedString( const char* buf, size_t buf_size )
 {
   std::vector<std::string> v;
   unsigned int string_start = 0;
@@ -55,10 +55,10 @@ str_( str )
 std::string
 TtString::Replace( const std::string& source, const std::string& pattern, const std::string& replacement )
 {
-  unsigned int pos = 0;
+  size_t pos = 0;
   std::string tmp;
   for (;;) {
-    unsigned int result = source.find( pattern, pos );
+    size_t result = source.find( pattern, pos );
     if ( result == std::string::npos ) {
       break;
     }
@@ -152,7 +152,7 @@ TtString::EndWith( const std::string& source, const std::string& pattern )
 
 
 std::string
-TtString::SubstringFromTo( const std::string& source, unsigned int from, unsigned int to )
+TtString::SubstringFromTo( const std::string& source, size_t from, size_t to )
 {
   if ( to + 1 == from ) {
     return "";
@@ -185,9 +185,9 @@ std::vector<std::string>
 TtString::Split( const std::string& source, char delimiter )
 {
   std::vector<std::string> v;
-  unsigned int current = 0;
+  size_t current = 0;
   for (;;) {
-    unsigned int point = source.find( delimiter, current );
+    size_t point = source.find( delimiter, current );
     if ( point == std::string::npos ) {
       v.push_back( TtString::SubstringFromTo( source, current, source.size() - 1 ) );
       return v;

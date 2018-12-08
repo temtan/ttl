@@ -11,10 +11,10 @@
 
 
 // -- TtIcon -------------------------------------------------------------
-unsigned int
+size_t
 TtIcon::GetIconCountOfFile( const std::string& path )
 {
-  return reinterpret_cast<unsigned int>( ::ExtractIcon( ::GetModuleHandle( nullptr ), path.c_str(), static_cast<UINT>( -1 ) ) );
+  return reinterpret_cast<size_t>( ::ExtractIcon( ::GetModuleHandle( nullptr ), path.c_str(), static_cast<UINT>( -1 ) ) );
 }
 
 

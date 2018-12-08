@@ -108,7 +108,7 @@ TtListViewColumn::SetText( const std::string& text )
   LVCOLUMN tmp = {LVCF_TEXT | LVCF_SUBITEM};
   tmp.iSubItem = index_;
   tmp.pszText = const_cast<char*>( text.c_str() );
-  tmp.cchTextMax = text.size();
+  tmp.cchTextMax = static_cast<int>( text.size() );
   this->SetInfo( tmp );
 }
 
@@ -355,13 +355,13 @@ TtListView::TtListView( void )
 bool
 TtListView::GetStyleD( int style )
 {
-  return this->GetWindowLong( GWL_STYLE ) & style;
+  return this->GetWindowLongPtr( GWL_STYLE ) & style;
 }
 
 void
 TtListView::SetStyleD( int style, bool flag )
 {
-  this->SetWindowLong( GWL_STYLE, this->GetWindowLong( GWL_STYLE ) ^ (flag ? style : 0) );
+  this->SetWindowLongPtr( GWL_STYLE, this->GetWindowLongPtr( GWL_STYLE ) ^ (flag ? style : 0) );
 }
 
 bool
@@ -380,13 +380,13 @@ TtListView::SetExtendedStyleD( int style, bool flag )
 int
 TtListView::GetView( void )
 {
-  return this->GetWindowLong( GWL_STYLE ) & LVS_TYPEMASK;
+  return this->GetWindowLongPtr( GWL_STYLE ) & LVS_TYPEMASK;
 }
 
 void
 TtListView::SetView( int view )
 {
-  this->SetWindowLong( GWL_STYLE, this->GetWindowLong( GWL_STYLE ) ^ (view & LVS_TYPEMASK) );
+  this->SetWindowLongPtr( GWL_STYLE, this->GetWindowLongPtr( GWL_STYLE ) ^ (view & LVS_TYPEMASK) );
 }
 
 bool
@@ -730,14 +730,14 @@ TtListView::ColumHitTestResult
 TtListView::HitTestColumn( int x, int y )
 {
   HDHITTESTINFO info = {{x, y}};
-  int ret = ::SendMessage( ListView_GetHeader( handle_ ), HDM_HITTEST, 0, reinterpret_cast<LPARAM>( &info ) );
+  LRESULT ret = ::SendMessage( ListView_GetHeader( handle_ ), HDM_HITTEST, 0, reinterpret_cast<LPARAM>( &info ) );
   return {
     (info.flags & HHT_NOWHERE)   ? ColumHitTestResult::Type::OnControl :
     (info.flags & HHT_ONHEADER)  ? ColumHitTestResult::Type::OnHeader :
     (info.flags & HHT_ONDIVIDER) ? ColumHitTestResult::Type::OnDivider :
     (info.flags & HHT_ONDIVOPEN) ? ColumHitTestResult::Type::OnDividerOpen :
     ColumHitTestResult::Type::None,
-    TtListViewColumn( this, ret != -1 ? ret : TtListViewColumn::INVALID_INDEX ) };
+    TtListViewColumn( this, ret != -1 ? static_cast<unsigned int>( ret ) : TtListViewColumn::INVALID_INDEX ) };
 }
 
 

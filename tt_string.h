@@ -14,7 +14,7 @@ namespace TtString {
   template <class ArrayType>
   class HeapString : public ArrayType {
   public:
-    explicit HeapString( unsigned int capacity ) :
+    explicit HeapString( size_t capacity ) :
     ArrayType( capacity + 1 ) {}
 
     explicit HeapString( const std::string& str ) :
@@ -27,8 +27,8 @@ namespace TtString {
       strncpy_s( pointer_.get(), capacity_, str.c_str(), str.size() + 1 );
     }
 
-    void ExtendCapacity( unsigned int increasing ) {
-      unsigned int new_capacity = capacity_ + increasing;
+    void ExtendCapacity( size_t increasing ) {
+      size_t new_capacity = capacity_ + increasing;
       decltype( pointer_ ) tmp( new char[new_capacity + 1] );
       memcpy( tmp.get(), pointer_.get(), capacity_ );
       capacity_  = new_capacity;
@@ -44,7 +44,7 @@ namespace TtString {
   using SharedString = HeapString<TtUtility::SharedArray<char>>;
 
   std::string ToRangedStringFromVector( const std::vector<std::string>& v );
-  std::vector<std::string> ToVectorFromRangedString( const char* buf, unsigned int buf_size );
+  std::vector<std::string> ToVectorFromRangedString( const char* buf, size_t buf_size );
 
   // •¶Žš—ñ’Ç‰Á—p
   class Appender {
@@ -73,7 +73,7 @@ namespace TtString {
   bool StartWith( const std::string& source, unsigned int start, const std::string& pattern );
   bool EndWith( const std::string& source, const std::string& pattern );
 
-  std::string SubstringFromTo( const std::string& source, unsigned int from, unsigned int to );
+  std::string SubstringFromTo( const std::string& source, size_t from, size_t to );
   std::string ToUpper( const std::string& source );
   std::string ToLower( const std::string& source );
 

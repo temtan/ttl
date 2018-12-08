@@ -213,7 +213,7 @@ TtToolBar::AddViewLargeBmpImage( void )
 int
 TtToolBar::AddBmpImage( int image_count, TtBmpImage& bmp_image )
 {
-  TBADDBITMAP tmp = {NULL, reinterpret_cast<UINT>( bmp_image.GetHandle() )};
+  TBADDBITMAP tmp = {NULL, static_cast<UINT>( reinterpret_cast<LONG_PTR>( bmp_image.GetHandle() ) )};
   return this->SendMessage( TB_ADDBITMAP, image_count, reinterpret_cast<LPARAM>( &tmp ) );
 }
 

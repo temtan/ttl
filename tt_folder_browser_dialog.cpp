@@ -83,7 +83,8 @@ TtFolderBrowserDialog::ShowDialog( TtWindow& parent )
   bi.lpfn = TtFolderBrowserDialog::Callback;
   bi.lParam = reinterpret_cast<LPARAM>( this );
 
-  ITEMIDLIST* item_id_list = SHBrowseForFolder( &bi );
+  // ITEMIDLIST* item_id_list = ::SHBrowseForFolder( &bi );
+  auto item_id_list = ::SHBrowseForFolder( &bi );
 
   if ( item_id_list == nullptr ) {
     return false;
@@ -94,7 +95,7 @@ TtFolderBrowserDialog::ShowDialog( TtWindow& parent )
     throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::SHGetPathFromIDList ) );
   }
   selected_path_ = tmp;
-  CoTaskMemFree( item_id_list );
+  ::CoTaskMemFree( item_id_list );
 
   return true;
 }

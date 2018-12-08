@@ -115,9 +115,6 @@ public:
   int SendMessage( UINT msg, WPARAM w_param = 0, LPARAM l_param = 0 );
   void PostMessage( UINT msg, WPARAM w_param = 0, LPARAM l_param = 0 );
 
-  LONG GetWindowLong( int index );
-  void SetWindowLong( int index, LONG value );
-
   LONG_PTR GetWindowLongPtr( int index );
   void SetWindowLongPtr( int index, LONG_PTR value );
 

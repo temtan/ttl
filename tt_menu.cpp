@@ -197,7 +197,7 @@ TtMenu::InsertNewItem( int index, int command_id, const std::string& text )
   info.fMask      = MIIM_ID | MIIM_STRING;
   info.wID        = command_id;
   info.dwTypeData = const_cast<char*>( text.c_str() );
-  info.cch        = text.size();
+  info.cch        = static_cast<UINT>( text.size() );
   this->InsertInfo( index, info );
   return TtMenuItem( handle_, index );
 }
@@ -216,7 +216,7 @@ TtMenu::InsertMenu( int index, TtSubMenu& sub_menu, const std::string& text )
   info.fMask      = MIIM_SUBMENU | MIIM_STRING;
   info.hSubMenu   = sub_menu.handle_;
   info.dwTypeData = const_cast<char*>( text.c_str() );
-  info.cch        = text.size();
+  info.cch        = static_cast<UINT>( text.size() );
   this->InsertInfo( index, info );
 }
 

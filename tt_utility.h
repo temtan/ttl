@@ -78,28 +78,28 @@ namespace TtUtility {
   template <class TYPE>
   class UniqueArray {
   public:
-    explicit UniqueArray( unsigned int capacity ) :
+    explicit UniqueArray( size_t capacity ) :
     capacity_( capacity ), pointer_( new TYPE[capacity] ) {}
 
     TYPE* GetPointer( void ) { return pointer_.get(); }
-    unsigned int GetCapacity( void ) { return capacity_; }
+    size_t GetCapacity( void ) { return capacity_; }
 
   protected:
-    unsigned int          capacity_;
+    size_t                capacity_;
     std::unique_ptr<TYPE> pointer_;
   };
 
   template <class TYPE>
   class SharedArray {
   public:
-    explicit SharedArray( unsigned int capacity ) :
+    explicit SharedArray( size_t capacity ) :
     capacity_( capacity ), pointer_( new TYPE[capacity], std::default_delete<TYPE[]>() ) {}
 
     TYPE* GetPointer( void ) { return pointer_.get(); }
-    unsigned int GetCapacity( void ) { return capacity_; }
+    size_t GetCapacity( void ) { return capacity_; }
 
   protected:
-    unsigned int          capacity_;
+    size_t                capacity_;
     std::shared_ptr<TYPE> pointer_;
   };
 

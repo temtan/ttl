@@ -123,7 +123,7 @@ TtMessageBox::Procedure( HWND handle, UINT msg, WPARAM w_param, LPARAM l_param )
   TtMessageBox* box  = hook_table[TtThread::GetCurrentThreadID()];
   WNDPROC       proc = procedure_table[TtThread::GetCurrentThreadID()];
 
-  LONG ret = ::CallWindowProc( proc, handle, msg, w_param, l_param );
+  LRESULT ret = ::CallWindowProc( proc, handle, msg, w_param, l_param );
   if ( msg == WM_INITDIALOG ) {
     ::SetClassLongPtr( handle, GCLP_WNDPROC, ULONG_PTR( proc ) );
     TtExtraordinarilyWindow( handle, *(box->parent_) ).SetCenterRelativeToParent();

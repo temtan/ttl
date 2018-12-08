@@ -24,7 +24,7 @@ public:
   };
 
 public:
-  static unsigned int GetIconCountOfFile( const std::string& path );
+  static size_t GetIconCountOfFile( const std::string& path );
 
   static TtIcon CreateFromID( Standard id );
   static TtIcon CreateFromResourceName( const std::string& name );

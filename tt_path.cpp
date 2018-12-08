@@ -193,6 +193,6 @@ std::string
 TtPath::ExpandPath( const std::string& path )
 {
   TtString::UniqueString buf( ( path.size() > MAX_PATH ? path.size() : MAX_PATH ) + 1 );
-  ::PathSearchAndQualify( path.c_str(), buf.GetPointer(), buf.GetCapacity() );
+  ::PathSearchAndQualify( path.c_str(), buf.GetPointer(), static_cast<UINT>( buf.GetCapacity() ) );
   return buf.ToString();
 }

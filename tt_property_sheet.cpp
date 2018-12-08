@@ -87,7 +87,7 @@ TtPropertySheet::Page::CreatedInternal( void )
 
     case PSN_APPLY:
       if ( NOT( TtUtility::Safing( handlers_.at_apply, true )() ) ) {
-        this->SetWindowLong( DWLP_MSGRESULT, TRUE );
+        this->SetWindowLongPtr( DWLP_MSGRESULT, TRUE );
       }
       return {WMResult::Done};
 
@@ -126,7 +126,7 @@ handlers_( {} )
   page_.pResource   = static_cast<const DLGTEMPLATE*>( template_object_ );
   page_.pszTitle    = title_.c_str();
   page_.pfnDlgProc  = TtPropertySheet::Page::WindowProcedureForTTLPropertySheetPage;
-  page_.lParam      = reinterpret_cast<long>( this );
+  page_.lParam      = reinterpret_cast<LPARAM>( this );
   page_.pfnCallback = TtPropertySheet::Page::ProcedureForTTLPropertySheetPage;
 
   DLGTEMPLATE& dialog_template = *(static_cast<DLGTEMPLATE*>( template_object_ ) );
@@ -198,7 +198,7 @@ TtPropertySheet::ProcedureForTTLPropertySheet( HWND handle, UINT msg, LPARAM l_p
     }
     TtPropertySheet& sheet = *TABLE[TtThread::GetCurrentThreadID()];
     sheet.handle_ = handle;
-    sheet.SetWindowLong( GWL_EXSTYLE, sheet.GetWindowLong( GWL_EXSTYLE ) & ~WS_EX_CONTEXTHELP );
+    sheet.SetWindowLongPtr( GWL_EXSTYLE, sheet.GetWindowLongPtr( GWL_EXSTYLE ) & ~WS_EX_CONTEXTHELP );
     if ( NOT( sheet.CreatedInternal() ) ) {
       ::DestroyWindow( sheet.handle_ );
       return 0;
@@ -280,7 +280,7 @@ TtPropertySheet::ShowDialog( TtForm& parent )
   sheet.pfnCallback = TtPropertySheet::ProcedureForTTLPropertySheet;
 
   TABLE[TtThread::GetCurrentThreadID()] = this;
-  int ret = ::PropertySheet( &sheet );
+  INT_PTR ret = ::PropertySheet( &sheet );
   TABLE.erase( TtThread::GetCurrentThreadID() );
   if ( ret == -1 ) {
     throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::PropertySheet ) );

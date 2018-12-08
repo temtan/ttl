@@ -56,7 +56,7 @@ TtIniFile::GetSections( void )
   const unsigned int max = 1024 * 1024;
   for (;;) {
     DWORD ret = ::GetPrivateProfileString(
-      NULL, NULL, "", buffer_.GetPointer(), buffer_.GetCapacity(),
+      NULL, NULL, "", buffer_.GetPointer(), static_cast<DWORD>( buffer_.GetCapacity() ),
       filename_.c_str() );
     if ( buffer_.GetCapacity() >= max || ret != buffer_.GetCapacity() - 2 ) {
       break;
@@ -106,7 +106,7 @@ TtIniSection::GetKeys( void ) const
   const unsigned int max = 1024 * 1024;
   for (;;) {
     DWORD ret = ::GetPrivateProfileString(
-      name_.c_str(), NULL, "", buffer_.GetPointer(), buffer_.GetCapacity(),
+      name_.c_str(), NULL, "", buffer_.GetPointer(), static_cast<DWORD>( buffer_.GetCapacity() ),
       ini_file_.GetFileName().c_str() );
     if ( buffer_.GetCapacity() >= max || ret != buffer_.GetCapacity() - 2 ) {
       break;
@@ -166,7 +166,7 @@ TtIniSection::GetString( const std::string& key, const std::string& default_valu
   for (;;) {
     DWORD ret = ::GetPrivateProfileString(
       name_.c_str(), key.c_str(), default_value.c_str(),
-      buffer_.GetPointer(), buffer_.GetCapacity(), ini_file_.GetFileName().c_str() );
+      buffer_.GetPointer(), static_cast<DWORD>( buffer_.GetCapacity() ), ini_file_.GetFileName().c_str() );
     if ( buffer_.GetCapacity() >= max || ret != buffer_.GetCapacity() - 1 ) {
       break;
     }

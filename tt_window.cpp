@@ -141,7 +141,7 @@ void
 TtWindow::OverrideWindowProcedureByTTL( void )
 {
   window_procedure_super_ = reinterpret_cast<WNDPROC>( this->GetClassLongPtr( GCLP_WNDPROC ) );
-  this->SetWindowLong( GCLP_WNDPROC, reinterpret_cast<ULONG_PTR>( TtWindow::WindowProcedureForTTL ) );
+  this->SetClassLongPtr( GCLP_WNDPROC, reinterpret_cast<ULONG_PTR>( TtWindow::WindowProcedureForTTL ) );
   if ( WINDOW_TABLE.Find( handle_ ) == nullptr ) {
     WINDOW_TABLE.Register( *this );
   }
@@ -334,7 +334,7 @@ TtWindow::CreatePrimitive( CreateParameter& parameter )
     style,
     CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
     parameter.parent_ ? parameter.parent_->GetHandle() : nullptr,
-    reinterpret_cast<HMENU>( parameter.id_ ),
+    reinterpret_cast<HMENU>( static_cast<int64_t>( parameter.id_ ) ),
     instance_handle_,
     parameter.lp_param_ );
   if ( handle_ == nullptr ) {
@@ -361,7 +361,7 @@ TtWindow::Close( void )
 int
 TtWindow::SendMessage( UINT msg, WPARAM w_param, LPARAM l_param )
 {
-  return ::SendMessage( handle_, msg, w_param, l_param );
+  return static_cast<int>( ::SendMessage( handle_, msg, w_param, l_param ) );
 }
 
 void
@@ -372,32 +372,6 @@ TtWindow::PostMessage( UINT msg, WPARAM w_param, LPARAM l_param )
   }
 }
 
-
-LONG
-TtWindow::GetWindowLong( int index )
-{
-  LONG tmp;
-  TtUtility::CallWindowsSystemFunctionWithErrorHandling(
-    [&] ( void ) {
-      tmp = ::GetWindowLong( handle_, index );
-    },
-    [] ( void ) {
-      throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::GetWindowLong ) );
-    } );
-  return tmp;
-}
-
-void
-TtWindow::SetWindowLong( int index, LONG value )
-{
-  TtUtility::CallWindowsSystemFunctionWithErrorHandling(
-    [&] ( void ) {
-      ::SetWindowLong( handle_, index, value );
-    },
-    [] ( void ) {
-      throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::SetWindowLong ) );
-    } );
-}
 
 LONG_PTR
 TtWindow::GetWindowLongPtr( int index )
@@ -456,7 +430,7 @@ TtWindow::SetClassLongPtr( int index, LONG_PTR value )
 void
 TtWindow::ChangeWindowStyle( DWORD style )
 {
-  this->SetWindowLong( GWL_STYLE, style );
+  this->SetWindowLongPtr( GWL_STYLE, style );
   this->Show();
   if ( ::SetWindowPos( handle_, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOOWNERZORDER ) == 0 ) {
     throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::SetWindowPos ) );
@@ -947,7 +921,7 @@ TtWindow::GetText( void )
     return std::string();
   }
   TtString::SharedString buf( length + 1 );
-  if ( ::GetWindowText( handle_, buf.GetPointer(), buf.GetCapacity() ) == 0 ) {
+  if ( ::GetWindowText( handle_, buf.GetPointer(), static_cast<int>( buf.GetCapacity() ) ) == 0 ) {
     throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::GetWindowText ) );
   }
   return buf.ToString();

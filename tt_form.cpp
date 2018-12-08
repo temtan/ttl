@@ -202,7 +202,7 @@ TtForm::RegisterAccelerator( TtForm& form, AcceleratorMap& map )
     ++i;
   }
 
-  HACCEL handle = ::CreateAcceleratorTable( array.GetPointer(), array.GetCapacity() );
+  HACCEL handle = ::CreateAcceleratorTable( array.GetPointer(), static_cast<int>( array.GetCapacity() ) );
   if ( handle == NULL ) {
     throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::CreateAcceleratorTable ) );
   }
@@ -223,7 +223,7 @@ TtForm::LoopDispatchMessage( void )
       throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::GetMessage ) );
 
     case 0:
-      return msg.wParam;
+      return static_cast<int>( msg.wParam );
 
     default:
       if ( ACCELERATOR_TABLE && ACCELERATOR_TABLE->Translate( &msg ) ) {
@@ -336,7 +336,7 @@ void
 TtForm::RegisterWMMouseMove( WMMouseMoveHandler handler, bool do_override )
 {
   this->RegisterSingleHandler( WM_MOUSEMOVE, [handler] ( WPARAM w_param, LPARAM l_param ) {
-    return handler( w_param, TtWindow::GetXOfLParam( l_param ), TtWindow::GetYOfLParam( l_param ) );
+    return handler( static_cast<int>( w_param ), TtWindow::GetXOfLParam( l_param ), TtWindow::GetYOfLParam( l_param ) );
   }, do_override );
 }
 
