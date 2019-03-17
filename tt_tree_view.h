@@ -23,6 +23,7 @@ public:
   bool IsValid( void );
   bool IsInvalid( void );
   bool IsExpanded( void );
+  bool IsExpandedOnce( void );
   bool HasChild( void );
   bool IsDescendantOf( TtTreeItem& other );
   bool IsAncestorOf( TtTreeItem& other );

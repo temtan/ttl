@@ -74,6 +74,17 @@ TtTreeItem::IsExpanded( void )
 
 
 bool
+TtTreeItem::IsExpandedOnce( void )
+{
+  TVITEM tmp = {TVIF_STATE};
+  tmp.hItem = handle_;
+  tmp.stateMask = TVIS_EXPANDEDONCE;
+  this->GetInfo( tmp );
+  return (tmp.state & TVIS_EXPANDEDONCE ? true : false);
+}
+
+
+bool
 TtTreeItem::HasChild( void )
 {
   TVITEM tmp = {TVIF_CHILDREN};
