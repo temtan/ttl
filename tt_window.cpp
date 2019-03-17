@@ -13,6 +13,7 @@
 #pragma comment(lib, "user32.lib")
 #pragma comment(lib, "comctl32.lib")
 #pragma comment(lib, "ole32.lib")
+#pragma comment(lib, "shell32.lib")
 
 
 // -----------------------------------------------------------------------
@@ -933,6 +934,13 @@ TtWindow::SetText( const std::string& str )
   if ( ::SetWindowText( handle_, str.c_str() ) == 0 ) {
     throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::SetWindowText ) );
   }
+}
+
+
+void
+TtWindow::DragAcceptFiles( bool flag )
+{
+  ::DragAcceptFiles( handle_, flag );
 }
 
 

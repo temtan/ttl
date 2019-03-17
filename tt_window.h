@@ -215,6 +215,8 @@ public:
   std::string GetText( void );
   void SetText( const std::string& str );
 
+  void DragAcceptFiles( bool flag );
+
 protected:
   TtWindow*    parent_;
   HWND         handle_;
