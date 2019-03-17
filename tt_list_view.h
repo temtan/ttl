@@ -34,6 +34,8 @@ public:
 
   unsigned int GetWidth( void ) const;
   void SetWidth( unsigned int width );
+  void SetWidthAuto( void );
+  void SetWidthAutoUseHeader( void );
 
   std::string GetText( void ) const;
   void SetText( const std::string& text );
@@ -210,7 +212,7 @@ public:
   void SetFullRowSelect( bool flag );
 
   bool GetHeaderDragAndDrop( void );
-  void SetHeaderDragandDrop( bool flag );
+  void SetHeaderDragAndDrop( bool flag );
 
   bool GetHideSelection( void );
   void SetHideSelection( bool flag );

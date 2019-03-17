@@ -90,6 +90,18 @@ TtListViewColumn::SetWidth( unsigned int width )
   }
 }
 
+void
+TtListViewColumn::SetWidthAuto( void )
+{
+  this->SetWidth( LVSCW_AUTOSIZE );
+}
+
+void
+TtListViewColumn::SetWidthAutoUseHeader( void )
+{
+  this->SetWidth( LVSCW_AUTOSIZE_USEHEADER );
+}
+
 std::string
 TtListViewColumn::GetText( void ) const
 {
@@ -468,7 +480,7 @@ TtListView::GetHeaderDragAndDrop( void )
 }
 
 void
-TtListView::SetHeaderDragandDrop( bool flag )
+TtListView::SetHeaderDragAndDrop( bool flag )
 {
   this->SetExtendedStyleD( LVS_EX_HEADERDRAGDROP, flag );
 }
@@ -523,10 +535,13 @@ TtListView::GetSmallImageList( void )
 void
 TtListView::SetSmallImageList( TtImageList& image_list )
 {
-  HIMAGELIST tmp = ListView_SetImageList( handle_, image_list.GetHandle(), LVSIL_SMALL );
-  if ( tmp == NULL ) {
-    throw TT_WIN_SYSTEM_CALL_EXCEPTION( REAL_FUNC_NAME_OF( ListView_SetImageList ) );
-  }
+  TtUtility::CallWindowsSystemFunctionWithErrorHandling(
+    [&] ( void ) {
+      ListView_SetImageList( handle_, image_list.GetHandle(), LVSIL_SMALL );
+    },
+    [] ( void ) {
+      throw TT_WIN_SYSTEM_CALL_EXCEPTION( REAL_FUNC_NAME_OF( ListView_SetImageList ) );
+    } );
 }
 
 TtImageList
@@ -542,10 +557,13 @@ TtListView::GetLargeImageList( void )
 void
 TtListView::SetLargeImageList( TtImageList& image_list )
 {
-  HIMAGELIST tmp = ListView_SetImageList( handle_, image_list.GetHandle(), LVSIL_NORMAL );
-  if ( tmp == NULL ) {
-    throw TT_WIN_SYSTEM_CALL_EXCEPTION( REAL_FUNC_NAME_OF( ListView_SetImageList ) );
-  }
+  TtUtility::CallWindowsSystemFunctionWithErrorHandling(
+    [&] ( void ) {
+      ListView_SetImageList( handle_, image_list.GetHandle(), LVSIL_NORMAL );
+    },
+    [] ( void ) {
+      throw TT_WIN_SYSTEM_CALL_EXCEPTION( REAL_FUNC_NAME_OF( ListView_SetImageList ) );
+    } );
 }
 
 unsigned int
