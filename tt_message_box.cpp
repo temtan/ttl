@@ -111,8 +111,8 @@ TtMessageBox::Hook( int code, WPARAM w_param, LPARAM l_param )
   if ( p->message == WM_NCCREATE ) {
     ::UnhookWindowsHookEx( box->hook_ );
     box->hook_ = nullptr;
-    procedure_table[TtThread::GetCurrentThreadID()] = reinterpret_cast<WNDPROC>( ::GetClassLongPtr( p->hwnd, GCLP_WNDPROC ) );
-    ::SetClassLongPtr( p->hwnd, GCLP_WNDPROC, ULONG_PTR( Procedure ) );
+    procedure_table[TtThread::GetCurrentThreadID()] = reinterpret_cast<WNDPROC>( ::GetWindowLongPtr( p->hwnd, GWLP_WNDPROC ) );
+    ::SetWindowLongPtr( p->hwnd, GWLP_WNDPROC, ULONG_PTR( Procedure ) );
   }
   return ::CallNextHookEx( box->hook_, code, w_param, l_param );
 }
@@ -125,7 +125,7 @@ TtMessageBox::Procedure( HWND handle, UINT msg, WPARAM w_param, LPARAM l_param )
 
   LRESULT ret = ::CallWindowProc( proc, handle, msg, w_param, l_param );
   if ( msg == WM_INITDIALOG ) {
-    ::SetClassLongPtr( handle, GCLP_WNDPROC, ULONG_PTR( proc ) );
+    ::SetWindowLongPtr( handle, GWLP_WNDPROC, ULONG_PTR( proc ) );
     TtExtraordinarilyWindow( handle, *(box->parent_) ).SetCenterRelativeToParent();
   }
   return ret;
