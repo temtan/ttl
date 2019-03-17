@@ -95,3 +95,41 @@ TtImageList::GetIcon( int index, UINT flags )
   }
   return TtIcon( tmp, true );
 }
+
+
+// -- TtSystemImageList --------------------------------------------------
+TtSystemImageList
+TtSystemImageList::GetSmallSystemImageList( void )
+{
+  HIMAGELIST handle;
+  HRESULT ret = ::SHGetImageList( SHIL_SMALL, IID_IImageList, reinterpret_cast<void**>( &handle ) );
+  if ( ret != S_OK ) {
+    throw TtWindowsSystemCallException( FUNC_NAME_OF( ::SHGetImageList ), ret, __FILE__, __LINE__ );
+  }
+  return TtSystemImageList( handle );
+}
+
+TtSystemImageList::TtSystemImageList( HIMAGELIST handle ) :
+TtImageList( handle, false ),
+offset_( ImageList_GetImageCount( handle ) )
+{
+}
+
+
+unsigned int
+TtSystemImageList::GetOffset( void )
+{
+  return offset_;
+}
+
+unsigned int
+TtSystemImageList::GetOffsetIndex( unsigned int index )
+{
+  return index + offset_;
+}
+
+TtIcon
+TtSystemImageList::GetIconByOffsetIndex( unsigned int index, UINT flags )
+{
+  return this->GetIcon( index + offset_, flags );
+}

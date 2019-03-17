@@ -27,3 +27,22 @@ public:
 
   TtIcon GetIcon( int index, UINT flags = ILD_NORMAL );
 };
+
+// -- TtSystemImageList --------------------------------------------------
+class TtSystemImageList : public TtImageList {
+public:
+  static TtSystemImageList GetSmallSystemImageList( void );
+
+private:
+  explicit TtSystemImageList( HIMAGELIST handle );
+
+public:
+  unsigned int GetOffset( void );
+  unsigned int GetOffsetIndex( unsigned int index );
+
+  TtIcon GetIconByOffsetIndex( unsigned int index, UINT flags = ILD_NORMAL );
+
+private:
+  unsigned int offset_;
+};
+
