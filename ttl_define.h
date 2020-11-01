@@ -34,7 +34,9 @@
 #  define PCS( s )         PCA( "%s", s )
 #  define PCF( f )         PCA( "%f", f )
 #  define PCLL( l )        PCA( "%lld", l )
+#  define PCLF( d )        PCA( "%lf", d )
 #  define PCSS( s )        (printf( "%s(%d) : %s = %s\n", __FILE__, __LINE__, #s, (s).c_str() ), fflush( stdout ))
+#  define PCB( b )         (printf( "%s(%d) : %s = %s\n", __FILE__, __LINE__, #b, (b) ? "true" : "false" ), fflush( stdout ))
 
 #  include "tt_utility.h"
 #  define PMD()            TtUtility::MessageBoxForDebug( "", "gone", 0, __FILE__, __LINE__ )
@@ -46,5 +48,7 @@
 #  define PMS( s )         PMA( "%s", s )
 #  define PMF( f )         PMA( "%f", f )
 #  define PMLL( l )        PMA( "%lld", l )
+#  define PMLF( d )        PMA( "%lf", d )
 #  define PMSS( s )        TtUtility::MessageBoxForDebug( "%s", #s, (void*)((s).c_str()), __FILE__, __LINE__ )
+#  define PMB( b )         TtUtility::MessageBoxForDebug( "%s", #b, (void*)((b) ? "true" : "false" ), __FILE__, __LINE__ )
 #endif
