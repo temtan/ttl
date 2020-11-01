@@ -58,6 +58,19 @@ TtPath::FileExists( const std::string& path )
   return ::PathFileExists( path.c_str() );
 }
 
+bool
+TtPath::AreTheseSamePath( const std::string& x, const std::string& y )
+{
+  auto f = [] ( const std::string& path ) -> std::string {
+    if ( TtPath::IsRelative( path ) ) {
+      return TtPath::Canonicalize( TtPath::ExpandPath( path ) );
+    }
+    return TtPath::Canonicalize( path );
+  };
+  return f( x ) == f( y );
+}
+
+
 // åüçıÇ»Ç«
 std::string
 TtPath::FindFileName( const std::string& path )
@@ -126,9 +139,15 @@ TtPath::QuoteIfHasSpaces( const std::string& path )
 }
 
 std::string
+TtPath::RemoveExtension( const std::string& path )
+{
+  return TtPath::EditPath( path, true, true, true, false );
+}
+
+std::string
 TtPath::ChangeExtension( const std::string& path, const std::string& ext )
 {
-  return TtPath::EditPath( path, true, true, true, false ) + "." + ext;
+  return TtPath::RemoveExtension( path ) + "." + ext;
 }
 
 
@@ -170,7 +189,7 @@ TtPath::GetExecutingFilePath( void )
 std::string
 TtPath::GetExecutingFilePathWithoutExtension( void )
 {
-  return TtPath::EditPath( TtPath::GetExecutingFilePath(), true, true, true, false );
+  return TtPath::RemoveExtension( TtPath::GetExecutingFilePath() );
 }
 
 std::string

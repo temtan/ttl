@@ -155,7 +155,7 @@ TtForm::AcceleratorTable::Translate( MSG* msg )
 }
 
 void
-TtForm::AcceleratorTable::Destory( void )
+TtForm::AcceleratorTable::Destroy( void )
 {
   if ( handle_ != nullptr ) {
     ::DestroyAcceleratorTable( handle_ );
@@ -207,7 +207,7 @@ TtForm::RegisterAccelerator( TtForm& form, AcceleratorMap& map )
     throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::CreateAcceleratorTable ) );
   }
   if ( ACCELERATOR_TABLE ) {
-    ACCELERATOR_TABLE->Destory();
+    ACCELERATOR_TABLE->Destroy();
     delete ACCELERATOR_TABLE;
   }
   ACCELERATOR_TABLE = new AcceleratorTable( handle, form );
@@ -226,19 +226,35 @@ TtForm::LoopDispatchMessage( void )
       return static_cast<int>( msg.wParam );
 
     default:
-      if ( ACCELERATOR_TABLE && ACCELERATOR_TABLE->Translate( &msg ) ) {
-        break;
-      }
-      auto it = FORM_TABLE.find( msg.hwnd );
-      if ( it != FORM_TABLE.end() ) {
-        if ( it->second->IsDialogMessage( &msg ) ) {
-          break;
-        }
-      }
-      ::TranslateMessage( &msg );
-      ::DispatchMessage( &msg );
+      TtForm::DispatchOneMessage( msg );
       break;
     }
+  }
+}
+
+
+void
+TtForm::DispatchOneMessage( MSG& msg )
+{
+  if ( ACCELERATOR_TABLE && ACCELERATOR_TABLE->Translate( &msg ) ) {
+    return;
+  }
+  auto it = FORM_TABLE.find( msg.hwnd );
+  if ( it != FORM_TABLE.end() ) {
+    if ( it->second->IsDialogMessage( &msg ) ) {
+      return;
+    }
+  }
+  ::TranslateMessage( &msg );
+  ::DispatchMessage( &msg );
+}
+
+void
+TtForm::DoEvent( void )
+{
+  MSG msg;
+  while ( ::PeekMessage( &msg, nullptr, 0, 0, PM_REMOVE ) ) {
+    TtForm::DispatchOneMessage( msg );
   }
 }
 
@@ -344,6 +360,14 @@ void
 TtForm::RegisterWMDropFiles( WMDropFilesHandler handler, bool do_override )
 {
   this->RegisterSingleHandler( WM_DROPFILES, [handler] ( WPARAM w_param, LPARAM ) {
-    return handler( reinterpret_cast<HDROP>( w_param ) );
+    HDROP drop = reinterpret_cast<HDROP>( w_param );
+#ifdef _WIN64
+    {
+      LONG_PTR p = (LONG_PTR)::GlobalAlloc(GMEM_MOVEABLE, 0);
+      drop = (HDROP)((0xFFFFFFFF00000000 & p) | (0x00000000FFFFFFFF & ((LONG_PTR)drop)));
+      ::GlobalFree( (HGLOBAL)p );
+    }
+#endif
+    return handler( drop );
   }, do_override );
 }

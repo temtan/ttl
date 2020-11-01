@@ -154,3 +154,12 @@ PerformanceCounter::GetElapsed( void )
   ::QueryPerformanceCounter( &tmp );
   return tmp.QuadPart - start_.QuadPart;
 }
+
+
+LONGLONG
+PerformanceCounter::GetElapsedAndStart( void )
+{
+  auto ret = this->GetElapsed();
+  this->Start();
+  return ret;
+}

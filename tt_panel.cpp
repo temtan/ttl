@@ -137,10 +137,32 @@ TtPanel::RegisterWMSizing( WMSizingHandler handler, bool do_override )
   }, do_override );
 }
 
+
 TtPanel::WMSizingHandler
 TtPanel::MakeCanChangeOnlyHorizontalHandler( void )
 {
-  return [this] ( int flag, RECT& rectangle ) -> WMResult {
+  return this->MakeCanChangeOnlyHorizontalHandlerWithMinimumWidth( 0 );
+}
+
+TtPanel::WMSizingHandler
+TtPanel::MakeCanChangeOnlyHorizontalHandlerWithMinimumWidth( int width_min )
+{
+  return [this, width_min] ( int flag, RECT& rectangle ) -> WMResult {
+    if ( rectangle.right - rectangle.left < width_min ) {
+      switch ( flag ) {
+      case WMSZ_LEFT:
+      case WMSZ_TOPLEFT:
+      case WMSZ_BOTTOMLEFT:
+        rectangle.left = rectangle.right - width_min;
+        break;
+
+      case WMSZ_RIGHT:
+      case WMSZ_TOPRIGHT:
+      case WMSZ_BOTTOMRIGHT:
+        rectangle.right = rectangle.left + width_min;
+        break;
+      }
+    }
     switch ( flag ) {
     case WMSZ_LEFT:
     case WMSZ_RIGHT:
@@ -165,7 +187,28 @@ TtPanel::MakeCanChangeOnlyHorizontalHandler( void )
 TtPanel::WMSizingHandler
 TtPanel::MakeCanChangeOnlyVerticalHandler( void )
 {
-  return [this] ( int flag, RECT& rectangle ) -> WMResult {
+  return this->MakeCanChangeOnlyVerticalHandlerWithMinimumHeight( 0 );
+}
+
+TtPanel::WMSizingHandler
+TtPanel::MakeCanChangeOnlyVerticalHandlerWithMinimumHeight( int height_min )
+{
+  return [this, height_min] ( int flag, RECT& rectangle ) -> WMResult {
+    if ( rectangle.bottom - rectangle.top < height_min ) {
+      switch ( flag ) {
+      case WMSZ_TOP:
+      case WMSZ_TOPLEFT:
+      case WMSZ_TOPRIGHT:
+        rectangle.top = rectangle.bottom - height_min;
+        break;
+
+      case WMSZ_BOTTOM:
+      case WMSZ_BOTTOMLEFT:
+      case WMSZ_BOTTOMRIGHT:
+        rectangle.bottom = rectangle.top + height_min;
+        break;
+      }
+    }
     switch ( flag ) {
     case WMSZ_TOP:
     case WMSZ_BOTTOM:
@@ -184,6 +227,44 @@ TtPanel::MakeCanChangeOnlyVerticalHandler( void )
       break;
     }
     return {WMResult::Done};
+  };
+}
+
+TtPanel::WMSizingHandler
+TtPanel::MakeMinimumSizedHandler( int width_min, int height_min )
+{
+  return [width_min, height_min] ( int flag, RECT& rectangle ) ->WMResult {
+    if ( rectangle.bottom - rectangle.top < height_min ) {
+      switch ( flag ) {
+      case WMSZ_TOP:
+      case WMSZ_TOPLEFT:
+      case WMSZ_TOPRIGHT:
+        rectangle.top = rectangle.bottom - height_min;
+        break;
+
+      case WMSZ_BOTTOM:
+      case WMSZ_BOTTOMLEFT:
+      case WMSZ_BOTTOMRIGHT:
+        rectangle.bottom = rectangle.top + height_min;
+        break;
+      }
+    }
+    if ( rectangle.right - rectangle.left < width_min ) {
+      switch ( flag ) {
+      case WMSZ_LEFT:
+      case WMSZ_TOPLEFT:
+      case WMSZ_BOTTOMLEFT:
+        rectangle.left = rectangle.right - width_min;
+        break;
+
+      case WMSZ_RIGHT:
+      case WMSZ_TOPRIGHT:
+      case WMSZ_BOTTOMRIGHT:
+        rectangle.right = rectangle.left + width_min;
+        break;
+      }
+    }
+    return {WMResult::Incomplete};
   };
 }
 
@@ -206,6 +287,21 @@ void
 TtPanel::ClearCommandHandler( int id )
 {
   command_table_[id].clear();
+}
+
+TtWindow::WMResult
+TtPanel::CallCommandHandler( int id, int code, HWND child )
+{
+  auto it = command_table_.find( id );
+  if ( it != command_table_.end() ) {
+    for ( auto handler : it->second ) {
+      auto result = handler( code, child );
+      if ( result.result_type == WMResult::Done ) {
+        return result;
+      }
+    }
+  }
+  return {notice_to_parent_ ? WMResult::DelegateToParent : WMResult::Done};
 }
 
 

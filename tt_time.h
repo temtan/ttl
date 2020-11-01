@@ -57,6 +57,8 @@ public:
   void Start( void );
   LONGLONG GetElapsed( void );
 
+  LONGLONG GetElapsedAndStart( void );
+
 private:
   LARGE_INTEGER start_;
 };

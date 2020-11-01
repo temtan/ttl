@@ -37,7 +37,7 @@ public:
     static const unsigned int HAND        = MB_ICONHAND;
   };
 
-  class DefautButton {
+  class DefaultButton {
   public:
     static const unsigned int FIRST  = MB_DEFBUTTON1;
     static const unsigned int SECOND = MB_DEFBUTTON2;

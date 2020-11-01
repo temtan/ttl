@@ -19,7 +19,7 @@ class TtListViewColumn {
   friend class TtListView;
 
 public:
-  static const int INVALID_INDEX = -1;
+  static const unsigned int INVALID_INDEX = static_cast<unsigned int>( -1 );
 
   explicit TtListViewColumn( TtListView* list, unsigned int index );
   void GetInfo( LVCOLUMN& info ) const;
@@ -70,7 +70,7 @@ template <class TYPE>
 class TtListViewColumnWith : public TtListViewColumn {
 public:
   explicit TtListViewColumnWith( TtListView* list, unsigned int index ) : TtListViewColumn( list, index ) {}
-  TtListViewColumnWith( TtListViewColumn& column ) : TtListViewColumn( column ) {}
+  TtListViewColumnWith( const TtListViewColumn& column ) : TtListViewColumn( column ) {}
 
   void SetParameter( TYPE parameter ) {
     this->SetParameterAs<TYPE>( parameter );
@@ -85,7 +85,7 @@ class TtListViewItem {
   friend class TtListView;
 
 public:
-  static const int INVALID_INDEX = -1;
+  static const unsigned int INVALID_INDEX = static_cast<unsigned int>( -1 );
 
   explicit TtListViewItem( TtListView* list, int index );
   void GetInfo( LVITEM& info ) const;
@@ -167,7 +167,7 @@ template <class TYPE>
 class TtListViewItemWith : public TtListViewItem {
 public:
   explicit TtListViewItemWith( TtListView* list, unsigned int index ) : TtListViewItem( list, index ) {}
-  TtListViewItemWith( TtListViewItem& item ) : TtListViewItem( item ) {}
+  TtListViewItemWith( const TtListViewItem& item ) : TtListViewItem( item ) {}
 
   void SetParameter( TYPE parameter ) {
     this->SetParameterAs<TYPE>( parameter );
@@ -283,9 +283,9 @@ public:
   void SortPrimitive( CompareFunction function );
 
   template<class TYPE>
-  void Sort( std::function<int ( TYPE x, TYPE y )> function ) {
-    this->SortPrimitive( [function] ( LPARAM x, LPARAM y ) -> int {
-      return function( reinterpret_cast<TYPE>( x ), reinterpret_cast<TYPE>( y ) );
+  void Sort( std::function<int ( TYPE x, TYPE y )> function, bool ascending ) {
+    this->SortPrimitive( [function, ascending] ( LPARAM x, LPARAM y ) -> int {
+      return (ascending ? 1 : -1) * function( reinterpret_cast<TYPE>( x ), reinterpret_cast<TYPE>( y ) );
     } );
   }
 

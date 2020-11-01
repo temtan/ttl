@@ -121,6 +121,12 @@ TtThread::GetThreadID( void ) const
   return thread_id_;
 }
 
+HANDLE
+TtThread::GetThreadHandle( void ) const
+{
+  return thread_handle_;
+}
+
 
 // -- TtFunctionThread ---------------------------------------------------
 TtFunctionThread::TtFunctionThread( std::function<unsigned int ( void )> function ) :

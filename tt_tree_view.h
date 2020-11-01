@@ -28,6 +28,9 @@ public:
   bool IsDescendantOf( TtTreeItem& other );
   bool IsAncestorOf( TtTreeItem& other );
 
+  void SetCheck( bool state );
+  bool GetCheck( void );
+
   bool operator ==( const TtTreeItem& other ) const;
   bool operator !=( const TtTreeItem& other ) const;
 
@@ -148,7 +151,7 @@ template <class TYPE>
 class TtTreeItemWith : public TtTreeItem {
 public:
   explicit TtTreeItemWith( TtTreeView* tree, HTREEITEM handle ) : TtTreeItem( tree, handle ) {}
-  TtTreeItemWith( TtTreeItem& item ) : TtTreeItem( item ) {}
+  TtTreeItemWith( const TtTreeItem& item ) : TtTreeItem( item ) {}
 
   void SetParameter( TYPE parameter ) {
     this->SetParameterAs<TYPE>( parameter );
@@ -170,6 +173,15 @@ public:
     static const DWORD HASLINES        = TVS_HASLINES;
     static const DWORD LINESATROOT     = TVS_LINESATROOT;
     static const DWORD SHOWSELALWAYS   = TVS_SHOWSELALWAYS;
+    static const DWORD NOTOOLTIPS      = TVS_NOTOOLTIPS;
+    static const DWORD CHECKBOXES      = TVS_CHECKBOXES;
+    static const DWORD TRACKSELECT     = TVS_TRACKSELECT;
+    static const DWORD SINGLEEXPAND    = TVS_SINGLEEXPAND;
+    static const DWORD INFOTIP         = TVS_INFOTIP;
+    static const DWORD FULLROWSELECT   = TVS_FULLROWSELECT;
+    static const DWORD NOSCROLL        = TVS_NOSCROLL;
+    static const DWORD NONEVENHEIGHT   = TVS_NONEVENHEIGHT;
+    static const DWORD NOHSCROLL       = TVS_NOHSCROLL;
   };
 
   explicit TtTreeView( void );

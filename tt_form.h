@@ -67,7 +67,7 @@ public:
   private:
     explicit AcceleratorTable( HACCEL handle, TtForm& form );
     bool Translate( MSG* msg );
-    void Destory( void );
+    void Destroy( void );
 
   private:
     HACCEL  handle_;
@@ -82,6 +82,8 @@ public:
   static WNDCLASS MakeDefaultWindowClass( HINSTANCE h_instance, const char* class_name );
   static void RegisterAccelerator( TtForm& form, AcceleratorMap& map );
   static int LoopDispatchMessage( void );
+  static void DispatchOneMessage( MSG& msg );
+  static void DoEvent( void );
 
 private:
   bool IsDialogMessage( MSG* msg );

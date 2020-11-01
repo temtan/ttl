@@ -40,6 +40,8 @@ public:
       Done,
       Incomplete,
       DelegateToParent,
+      DoneAndReturnValueAtDialog,
+      DoneAndDirectReturnAtDialog,
     };
     ResultType result_type;
     LRESULT    result;
@@ -250,7 +252,16 @@ protected:
   }
 };
 
-// -- BasedOnTtWindow --------------------------------------------------
+// -- TtWindowOverwriteStyle ---------------------------------------------
+template <class BASE, DWORD style>
+class TtWindowOverwriteStyle : public BASE {
+protected:
+  virtual DWORD GetStyle( void ) override {
+    return style;
+  }
+};
+
+// -- BasedOnTtWindow ----------------------------------------------------
 template <DWORD style, DWORD extended_style, typename WithClassName>
 class BasedOnTtWindow : public TtWindow {
 protected:

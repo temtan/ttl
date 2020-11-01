@@ -96,6 +96,20 @@ TtTextTemplate::Document::HasKey( const std::string& key )
 }
 
 
+std::vector<std::string>
+TtTextTemplate::Document::GetKeys( void )
+{
+  std::vector<std::string> v;
+  for ( auto& one : replace_table_ ) {
+    v.push_back( one.first );
+  }
+  for ( auto& one : document_table_ ) {
+    v.push_back( one.first );
+  }
+  return v;
+}
+
+
 bool
 TtTextTemplate::Document::ParseAsReplace( const char*& cp )
 {

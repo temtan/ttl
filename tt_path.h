@@ -17,6 +17,8 @@ namespace TtPath {
 
   bool FileExists(  const std::string& path );
 
+  bool AreTheseSamePath( const std::string& x, const std::string& y );
+
   // åüçıÇ»Ç«
   std::string FindFileName( const std::string& path );
   std::string FindExtension( const std::string& path );
@@ -27,6 +29,7 @@ namespace TtPath {
   std::string BaseName( const std::string& path, const std::string& suffix = "" );
   std::string CompactPath( const std::string& src, unsigned int max );
   std::string QuoteIfHasSpaces( const std::string& path );
+  std::string RemoveExtension( const std::string& path );
   std::string ChangeExtension( const std::string& path, const std::string& ext );
   std::optional<std::string> GetRelativePathTo( const std::string& from, bool from_is_directory, const std::string to, bool to_is_directory );
   std::optional<std::string> CanonicalizeFrom( const std::string& path );

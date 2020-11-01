@@ -2,8 +2,11 @@
 
 #pragma once
 
+#include <unordered_map>
+
 #include "tt_window.h"
 #include "tt_window_utility.h"
+#include "tt_panel.h"
 
 #include "tt_bmp_image.h"
 
@@ -56,8 +59,10 @@ public:
     bool IsIndeterminate( void );
     bool IsPressed( void );
 
+    void SetCheck( bool flag );
     void Check( void );
     void Uncheck( void );
+    void SetEnable( bool flag );
     void Enable( void );
     void Disable( void );
     void Press( void );
@@ -179,7 +184,10 @@ public:
                               int style = Button::Style::Standard );
   void AddSeparator( int command_id = 0 );
 
+  TtPanel::NotifyHandler MakeNotifyHandlerForToolTipByStringTable( void );
+
   Button GetButton( int command_id );
 
 private:
+  std::unordered_map<int, std::string> string_table_;
 };

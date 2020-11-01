@@ -17,7 +17,7 @@ type_( type ),
 message_( message ),
 caption_( caption ),
 icon_( icon ),
-default_button_( TtMessageBox::DefautButton::FIRST )
+default_button_( TtMessageBox::DefaultButton::FIRST )
 {
 }
 

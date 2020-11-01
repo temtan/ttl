@@ -111,6 +111,12 @@ TtToolBar::Button::IsPressed( void )
 
 
 void
+TtToolBar::Button::SetCheck( bool flag )
+{
+  flag ? this->Check() : this->Uncheck();
+}
+
+void
 TtToolBar::Button::Check( void )
 {
   TT_TOOL_BAR_SEND_MESSAGE( tool_bar_, TB_CHECKBUTTON, command_id_, TRUE );
@@ -120,6 +126,12 @@ void
 TtToolBar::Button::Uncheck( void )
 {
   TT_TOOL_BAR_SEND_MESSAGE( tool_bar_, TB_CHECKBUTTON, command_id_, FALSE );
+}
+
+void
+TtToolBar::Button::SetEnable( bool flag )
+{
+  flag ? this->Enable() : this->Disable();
 }
 
 void
@@ -288,6 +300,7 @@ TtToolBar::AddButtonWithString( int command_id, int bmp_index, const std::string
 {
   TBBUTTON tmp = {bmp_index, command_id, Button::State::Enabled, static_cast<BYTE>( style ), {0}, 0, reinterpret_cast<INT_PTR>( string.c_str() )};
   TT_TOOL_BAR_SEND_MESSAGE( this, TB_ADDBUTTONS, 1, reinterpret_cast<LPARAM>( &tmp ) );
+  string_table_[command_id] = string;
   return Button( this, command_id );
 }
 
@@ -297,6 +310,23 @@ TtToolBar::AddSeparator( int command_id )
 {
   TBBUTTON tmp = {0, command_id, Button::State::Enabled, static_cast<BYTE>( Button::Style::Separator ), 0, 0, 0};
   TT_TOOL_BAR_SEND_MESSAGE( this, TB_ADDBUTTONS, 1, reinterpret_cast<LPARAM>( &tmp ) );
+}
+
+
+TtPanel::NotifyHandler
+TtToolBar::MakeNotifyHandlerForToolTipByStringTable( void )
+{
+  return [this] ( NMHDR* nmhdr ) -> WMResult {
+    if ( nmhdr->code == TBN_GETINFOTIP ) {
+      NMTBGETINFOTIP* info = reinterpret_cast<NMTBGETINFOTIP*>( nmhdr );
+      if ( auto it = string_table_.find( info->iItem ); it != string_table_.end() ) {
+        info->pszText = it->second.data();
+        info->cchTextMax = static_cast<int>( it->second.size() );
+        return {WMResult::Done};
+      }
+    }
+    return {WMResult::Incomplete};
+  };
 }
 
 

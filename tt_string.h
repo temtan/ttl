@@ -77,7 +77,12 @@ namespace TtString {
   std::string ToUpper( const std::string& source );
   std::string ToLower( const std::string& source );
 
-  std::vector<std::string> Split( const std::string& source, char delimiter );
+  std::string RemoveCR( const std::string& source );
+  std::string AddCR( const std::string& source );
+
+    std::vector<std::string> Split( const std::string& source, char delimiter );
+
+  int Compare( const std::string& x, const std::string& y );
 }
 
 // -- “ÁŽê‰»‚ÌŽÀ‘• -------------------------------------------------------

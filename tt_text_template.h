@@ -29,6 +29,8 @@ namespace TtTextTemplate {
 
     bool HasKey( const std::string& key );
 
+    std::vector<std::string> GetKeys( void );
+
   private:
     bool ParseAsReplace( const char*& cp );
     bool ParseAsDocument( const char*& cp );

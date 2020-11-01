@@ -22,7 +22,19 @@ TtDialog::WindowProcedureForTTLDialog( HWND handle, UINT msg, WPARAM w_param, LP
     }
   }
   auto ret = TtWindow::FindAndCallWindowProcedure( handle, msg, w_param, l_param );
-  return ( ret.result_type == WMResult::Done ) ? TRUE : FALSE;
+  switch ( ret.result_type ) {
+  case WMResult::DoneAndReturnValueAtDialog:
+    ::SetWindowLongPtr( handle, DWLP_MSGRESULT, ret.result );
+    // walk through
+  case WMResult::Done:
+    return TRUE;
+
+  default:
+    return FALSE;
+
+  case WMResult::DoneAndDirectReturnAtDialog:
+    return ret.result;
+  }
 }
 
 

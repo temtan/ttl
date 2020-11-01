@@ -122,6 +122,18 @@ TtTreeItem::IsAncestorOf( TtTreeItem& other )
   return proc( other );
 }
 
+void
+TtTreeItem::SetCheck( bool state )
+{
+  TreeView_SetCheckState( tree_->GetHandle(), handle_, state ? TRUE : FALSE );
+}
+
+bool
+TtTreeItem::GetCheck( void )
+{
+  return TreeView_GetCheckState( tree_->GetHandle(), handle_ );
+}
+
 
 bool
 TtTreeItem::operator ==( const TtTreeItem& other ) const

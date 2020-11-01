@@ -6,6 +6,7 @@
 #include "tt_windows_h_include.h"
 
 #include "ttl_define.h"
+#include "tt_string.h"
 
 #include "tt_utility.h"
 
@@ -13,17 +14,21 @@
 #pragma comment(lib, "user32.lib")
 
 
+template <class TYPE>
 bool
-TtUtility::StringToInteger( const std::string& str, int* ret, int base )
+TtUtility::StringToInteger( const std::string& str, TYPE* ret, int base )
 {
   if ( str.empty() ) {
     return false;
   }
   char* endptr;
   errno = 0;
-  *ret = strtol( str.c_str(), &endptr, base );
+  *ret = static_cast<TYPE>( strtoll( str.c_str(), &endptr, base ) );
   return *endptr == '\0' && errno == 0;
 }
+
+template bool TtUtility::StringToInteger<int>( const std::string&, int*, int );
+template bool TtUtility::StringToInteger<unsigned int>( const std::string&, unsigned int*, int );
 
 bool
 TtUtility::StringToDouble( const std::string& str, double* ret )
@@ -109,6 +114,29 @@ TtUtility::MicrosoftCompilerDateMacroToNormalString( const std::string& date )
   tmp.append( day );
   return tmp;
 }
+
+std::string
+TtUtility::GetANSIErrorMessage( errno_t error_number )
+{
+  char buf[1024];
+  ::strerror_s( buf, sizeof( buf ), error_number );
+  return buf;
+}
+
+
+std::string
+TtUtility::ExpandEnvironmentString( const std::string& str )
+{
+  char buf[1024 * 4];
+  auto ret = ::ExpandEnvironmentStrings( str.c_str(), buf, sizeof( buf ) );
+  if ( ret <= sizeof( buf ) ) {
+    return buf;
+  }
+  TtString::UniqueString heap_buf( ret );
+  ::ExpandEnvironmentStrings( str.c_str(), heap_buf.GetPointer(), static_cast<DWORD>( heap_buf.GetCapacity() ) );
+  return heap_buf.ToString();
+}
+
 
 
 void

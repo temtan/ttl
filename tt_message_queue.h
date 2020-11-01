@@ -22,7 +22,7 @@ public:
   queue_(),
   lock_(),
   get_semaphoer_() {
-    get_semaphoer_ = ::CreateSemaphore( nullptr, queue_.size(), INT_MAX, nullptr );
+    get_semaphoer_ = ::CreateSemaphore( nullptr, static_cast<LONG>( queue_.size() ), INT_MAX, nullptr );
     if ( get_semaphoer_ == nullptr ) {
       throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::CreateSemaphore ) );
     }
@@ -57,11 +57,9 @@ public:
   }
 
   void ClearMessage( void ) {
-    lock_.EnterExecute( [this] ( void ) {
-      while ( NOT( queue_.empty() ) ) {
-        queue_.pop();
-      }
-    } );
+    while ( this->HasMessage() ) {
+      this->GetMessage();
+    }
   }
 
 private:

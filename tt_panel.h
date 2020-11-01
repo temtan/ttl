@@ -33,7 +33,10 @@ public:
   void RegisterWMSizing( WMSizingHandler handler, bool do_override = false );
 
   WMSizingHandler MakeCanChangeOnlyHorizontalHandler( void );
+  WMSizingHandler MakeCanChangeOnlyHorizontalHandlerWithMinimumWidth( int width_min );
   WMSizingHandler MakeCanChangeOnlyVerticalHandler( void );
+  WMSizingHandler MakeCanChangeOnlyVerticalHandlerWithMinimumHeight( int height_min );
+  WMSizingHandler MakeMinimumSizedHandler( int width_min, int height_min );
 
   using WMPaintHandler = std::function<WMResult ( void )>;
   void RegisterWMPaint( WMPaintHandler handler, bool do_override = false );
@@ -41,6 +44,7 @@ public:
   using CommandHandler = std::function<WMResult ( int code, HWND child )>;
   void AddCommandHandler( int id, CommandHandler handler );
   void ClearCommandHandler( int id );
+  WMResult CallCommandHandler( int id, int code, HWND child );
 
   using NotifyHandler  = std::function<WMResult ( NMHDR* nmhdr )>;
   void AddNotifyHandler( int id, NotifyHandler handler );

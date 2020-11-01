@@ -29,6 +29,7 @@ public:
 
   DWORD GetExitCode( void ) const;
   DWORD GetThreadID( void ) const;
+  HANDLE GetThreadHandle( void ) const;
 
 private:
   virtual unsigned int Run( void ) = 0;

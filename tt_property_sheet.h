@@ -27,6 +27,7 @@ public:
 
     virtual bool Created( void );
 
+  public:
     using AtPageCreateHandler  = std::function<bool ( void )>;
     using AtPageReleaseHandler = std::function<void ( void )>;
 

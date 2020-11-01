@@ -181,6 +181,43 @@ TtString::ToLower( const std::string& source )
 }
 
 
+std::string
+TtString::RemoveCR( const std::string& source )
+{
+  auto buffer = std::make_unique<char[]>( source.size() + 1 );
+  char* c = buffer.get();
+  const char* s = source.c_str();
+  while ( *s != '\0' ) {
+    *c = *s;
+    if ( *s != '\r' ) {
+      ++c;
+    }
+    ++s;
+  }
+  *c = *s;
+  return buffer.get();
+}
+
+std::string
+TtString::AddCR( const std::string& source )
+{
+  auto buffer = std::make_unique<char[]>( source.size() * 2 + 1 );
+  char* c = buffer.get() + source.size() * 2;
+  const char* s = source.c_str() + source.size();
+  *c = *s;
+  while ( s != source.c_str() ) {
+    if ( *s == '\n' && s[-1] != '\r' ) {
+      --c;
+      *c = '\r';
+    }
+    --c;
+    --s;
+    *c = *s;
+  }
+  return c;
+}
+
+
 std::vector<std::string>
 TtString::Split( const std::string& source, char delimiter )
 {
@@ -199,6 +236,13 @@ TtString::Split( const std::string& source, char delimiter )
       return v;
     }
   }
+}
+
+
+int
+TtString::Compare( const std::string& x, const std::string& y )
+{
+  return ::strcmp( x.c_str(), y.c_str() );
 }
 
 

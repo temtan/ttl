@@ -14,7 +14,9 @@
 
 namespace TtUtility {
   // ----- 文字列数値変換
-  bool StringToInteger( const std::string& str, int* ret, int base = 10 );
+  template <class TYPE>
+  bool StringToInteger( const std::string& str, TYPE* ret, int base = 10 );
+
   bool StringToDouble( const std::string& str, double* ret );
 
   template <class TYPE>
@@ -179,6 +181,11 @@ namespace TtUtility {
     return r > l ? l : r;
   }
 
+  template <class TYPE>
+  int OrderingToInt( TYPE ordering ) {
+    return (ordering == 0) ? 0 : ((ordering > 0) ? 1 : -1);
+  }
+
   // ----- システム系
   void CallWindowsSystemFunctionWithErrorHandling( std::function<void ( void )> function,
                                                    std::function<void ( void )> error_handling );
@@ -186,6 +193,10 @@ namespace TtUtility {
 
   std::string MicrosoftCompilerDateMacroToNormalString( const std::string& date );
 #define TTL_DATE_STRING TtUtility::MicrosoftCompilerDateMacroToNormalString( __DATE__ )
+
+  std::string GetANSIErrorMessage( errno_t error_number );
+
+  std::string ExpandEnvironmentString( const std::string& str );
 
   void MessageBoxForDebug( const char* type, const char* obj_name, void* obj, const char* file, int line );
 }
