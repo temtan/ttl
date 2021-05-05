@@ -23,6 +23,8 @@ public:
 
   const std::vector<std::string>& GetFunctionNameList( void );
 
+  std::string GetString( unsigned int id );
+
   template <class FUNCTION_TYPE>
   FUNCTION_TYPE GetFunction( const std::string& name ) {
     return reinterpret_cast<FUNCTION_TYPE>( this->GetProcessAddress( name.c_str() ) );
@@ -40,7 +42,6 @@ private:
   FARPROC GetProcessAddress( const char* name );
 
 private:
-  HINSTANCE                handle_;
   std::vector<std::string> function_name_list_;
 };
 

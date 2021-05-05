@@ -6,6 +6,7 @@
 #include "ttl_define.h"
 
 #include "tt_dynamic_link_library.h"
+#include "tt_string.h"
 
 #pragma comment(lib, "kernel32.lib")
 #pragma comment(lib, "imagehlp.lib")
@@ -26,17 +27,19 @@ TtDynamicLinkLibrary::LoadLibrary( const std::string& filename )
   IMAGE_EXPORT_DIRECTORY* directory = static_cast<IMAGE_EXPORT_DIRECTORY*>(
     ::ImageDirectoryEntryToData( base, TRUE, IMAGE_DIRECTORY_ENTRY_EXPORT, &size ) );
 
-  WORD* ordinals = reinterpret_cast<WORD*>( base + directory->AddressOfNameOrdinals );
-  DWORD* names = reinterpret_cast<DWORD*>( base + directory->AddressOfNames );
+  if ( directory ) {
+    WORD* ordinals = reinterpret_cast<WORD*>( base + directory->AddressOfNameOrdinals );
+    DWORD* names = reinterpret_cast<DWORD*>( base + directory->AddressOfNames );
 
-  for ( unsigned int i = 0; i < directory->NumberOfFunctions; ++i ) {
-    for ( unsigned int k = 0; k < directory->NumberOfNames; ++k ) {
-      if ( ordinals[k] == i ) {
-        function_name_list.push_back( reinterpret_cast<char*>( base + names[k] ) );
+    for ( unsigned int i = 0; i < directory->NumberOfFunctions; ++i ) {
+      for ( unsigned int k = 0; k < directory->NumberOfNames; ++k ) {
+        if ( ordinals[k] == i ) {
+          function_name_list.push_back( reinterpret_cast<char*>( base + names[k] ) );
+        }
       }
     }
   }
-  
+
   return TtDynamicLinkLibrary( handle, true, function_name_list );
 }
 
@@ -52,6 +55,24 @@ const std::vector<std::string>&
 TtDynamicLinkLibrary::GetFunctionNameList( void )
 {
   return function_name_list_;
+}
+
+
+std::string
+TtDynamicLinkLibrary::GetString( unsigned int id )
+{
+  size_t buf_size = 1024;
+  for (;;) {
+    TtString::UniqueString buf( buf_size );
+    int ret = ::LoadString( handle_, id, buf.GetPointer(), buf_size );
+    if ( ret == 0 ) {
+      throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::LoadString ) );
+    }
+    if ( ret < static_cast<int>( buf_size - 2 ) ) {
+      return buf.ToString();
+    }
+    buf_size = static_cast<size_t>( buf_size * 1.5 );
+  }
 }
 
 
