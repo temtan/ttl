@@ -64,7 +64,7 @@ TtDynamicLinkLibrary::GetString( unsigned int id )
   size_t buf_size = 1024;
   for (;;) {
     TtString::UniqueString buf( buf_size );
-    int ret = ::LoadString( handle_, id, buf.GetPointer(), buf_size );
+    int ret = ::LoadString( handle_, id, buf.GetPointer(), static_cast<int>( buf_size ) );
     if ( ret == 0 ) {
       throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::LoadString ) );
     }
