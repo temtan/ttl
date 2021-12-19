@@ -12,6 +12,7 @@
 TtTextTemplate::Document::Document( void ) :
 replace_table_(),
 document_table_(),
+post_processing_( nullptr ),
 data_()
 {
 }
@@ -21,6 +22,7 @@ TtTextTemplate::Document::ResetAll( void )
 {
   replace_table_.clear();
   document_table_.clear();
+  post_processing_ = nullptr;
   data_.clear();
 }
 
@@ -33,6 +35,7 @@ TtTextTemplate::Document::ResetRegistered( void )
   for ( auto& it : document_table_ ) {
     it.second->result_buffer_->clear();
   }
+  post_processing_ = nullptr;
 }
 
 
@@ -175,16 +178,16 @@ TtTextTemplate::Document::ParseAsDocument( const char*& cp )
   const char* document_start = tmp + 3;
   std::string close_str( "}%%" + key + "%%" );
 
-  auto is_closed = [&close_str]( const char* cp ) -> bool {
+  auto is_closed = [&close_str] ( const char* cp ) -> bool {
     for ( unsigned int i = 0; i < close_str.size(); ++i ) {
-      if ( *(cp + i) != close_str[i] ) {
+      if ( *(cp + i) == '\0' || *(cp + i) != close_str[i] ) {
         return false;
       }
     }
     return true;
   };
 
-  for ( ; tmp != '\0'; ++tmp ) {
+  for ( ; (*tmp) != '\0'; ++tmp ) {
     if ( is_closed( tmp ) ) {
       std::string document_text( document_start, tmp - document_start );
       data_.push_back( std::make_shared<std::string>() );
@@ -197,6 +200,13 @@ TtTextTemplate::Document::ParseAsDocument( const char*& cp )
     }
   }
   return false;
+}
+
+
+void
+TtTextTemplate::Document::RegisterPostProcessing( std::function<void ( std::string& )> processing )
+{
+  post_processing_ = processing;
 }
 
 
@@ -269,6 +279,9 @@ TtTextTemplate::Document::MakeText( void )
   std::string buf;
   for ( auto& it : data_ ) {
     buf.append( *it );
+  }
+  if ( post_processing_ ) {
+    post_processing_( buf );
   }
   return buf;
 }

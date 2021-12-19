@@ -38,6 +38,7 @@ namespace TtTextTemplate {
   public:
     void RegisterAsReplace( const std::string& key, const std::string& replacement );
     void RegisterAsDocument( const std::string& key, Callback callback );
+    void RegisterPostProcessing( std::function<void ( std::string& )> processing );
 
     // -- Registrar ------------------------------------------------------
     class Registrar {
@@ -63,6 +64,7 @@ namespace TtTextTemplate {
   private:
     std::unordered_map<std::string, std::shared_ptr<std::string>>      replace_table_;
     std::unordered_map<std::string, std::shared_ptr<InternalDocument>> document_table_;
+    std::function<void ( std::string& )>                               post_processing_;
     std::vector<std::shared_ptr<std::string>>                          data_;
   };
 
