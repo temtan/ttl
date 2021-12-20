@@ -1,6 +1,7 @@
 // tt_text_template.cpp
 
 #include <stdio.h>
+#include <optional>
 
 #include "ttl_define.h"
 #include "tt_exception.h"
@@ -154,7 +155,15 @@ TtTextTemplate::Document::ParseAsReplace( const char*& cp )
 bool
 TtTextTemplate::Document::ParseAsDocument( const char*& cp )
 {
-  auto is_id_char = []( const char* cp ) -> bool { return isalnum( *cp ) || *cp == '_'; };
+  auto is_id_char = [] ( const char* cp ) -> bool { return isalnum( *cp ) || *cp == '_'; };
+  auto start_with = [] ( const char* cp, const std::string& str ) {
+    for ( unsigned int i = 0; i < str.size(); ++i ) {
+      if ( *(cp + i) == '\0' || *(cp + i) != str[i] ) {
+        return false;
+      }
+    }
+    return true;
+  };
 
   if ( *(cp + 1) != '%' ) {
     return false;
@@ -176,25 +185,23 @@ TtTextTemplate::Document::ParseAsDocument( const char*& cp )
   }
   std::string key( id_start, tmp - id_start );
   const char* document_start = tmp + 3;
-  std::string close_str( "}%%" + key + "%%" );
 
-  auto is_closed = [&close_str] ( const char* cp ) -> bool {
-    for ( unsigned int i = 0; i < close_str.size(); ++i ) {
-      if ( *(cp + i) == '\0' || *(cp + i) != close_str[i] ) {
-        return false;
-      }
+  auto is_closed = [&start_with, &key] ( const char* cp ) -> std::optional<unsigned int> {
+    if ( start_with( cp, "}%%" ) ) {
+      std::string close_str( "}%%" + key + "%%" );
+      return start_with( cp, close_str ) ? static_cast<unsigned int>( close_str.size() ) : 3;
     }
-    return true;
+    return std::nullopt;
   };
 
   for ( ; (*tmp) != '\0'; ++tmp ) {
-    if ( is_closed( tmp ) ) {
+    if ( auto enclosed_size = is_closed( tmp ); enclosed_size ) {
       std::string document_text( document_start, tmp - document_start );
       data_.push_back( std::make_shared<std::string>() );
       document_table_[key] = std::shared_ptr<InternalDocument>( new InternalDocument( data_.back() ) );
       document_table_[key]->ParseText( document_text );
 
-      cp = tmp + close_str.size() - 1;
+      cp = tmp + enclosed_size.value() - 1;
       data_.push_back( std::make_shared<std::string>() );
       return true;
     }
