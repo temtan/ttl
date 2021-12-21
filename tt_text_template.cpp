@@ -95,8 +95,19 @@ TtTextTemplate::Document::ParseText( const std::string& template_text )
 bool
 TtTextTemplate::Document::HasKey( const std::string& key )
 {
-  return ( replace_table_.find( key ) != replace_table_.end() ||
-           document_table_.find( key ) != document_table_.end() );
+  return this->HasReplaceKey( key ) || this->HasDocumentKey( key );
+}
+
+bool
+TtTextTemplate::Document::HasReplaceKey( const std::string& key )
+{
+  return replace_table_.contains( key );
+}
+
+bool
+TtTextTemplate::Document::HasDocumentKey( const std::string& key )
+{
+  return document_table_.contains( key );
 }
 
 
@@ -107,6 +118,26 @@ TtTextTemplate::Document::GetKeys( void )
   for ( auto& one : replace_table_ ) {
     v.push_back( one.first );
   }
+  for ( auto& one : document_table_ ) {
+    v.push_back( one.first );
+  }
+  return v;
+}
+
+std::vector<std::string>
+TtTextTemplate::Document::GetReplaceKeys( void )
+{
+  std::vector<std::string> v;
+  for ( auto& one : replace_table_ ) {
+    v.push_back( one.first );
+  }
+  return v;
+}
+
+std::vector<std::string>
+TtTextTemplate::Document::GetDocumentKeys( void )
+{
+  std::vector<std::string> v;
   for ( auto& one : document_table_ ) {
     v.push_back( one.first );
   }
