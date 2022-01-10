@@ -70,25 +70,32 @@ TtTextTemplate::Document::ParseFile( const std::string& path )
 void
 TtTextTemplate::Document::ParseText( const std::string& template_text )
 {
-  data_.push_back( std::make_shared<std::string>() );
-  for ( const char* cp = template_text.c_str(); *cp != '\0'; ++cp ) {
+  this->ParseTextWithClosedCheck( template_text.c_str(), [] ( const char* cp ) { return *cp == '\0'; } );
+}
+
+void
+TtTextTemplate::Document::ParseTextWithClosedCheck( const char* text_start, ClosedCheckFunction check_function )
+{
+  auto parsed = std::make_shared<std::string>();
+  for ( const char* cp = text_start; NOT( check_function( cp ) ); ++cp ) {
     switch ( *cp ) {
     case '@':
       if ( NOT( this->ParseAsReplace( cp ) ) ) {
-        data_.back()->append( cp, 1 );
+        parsed->append( cp, 1 );
       }
       break;
 
     case '%':
       if ( NOT( this->ParseAsDocument( cp ) ) ) {
-        data_.back()->append( cp, 1 );
+        parsed->append( cp, 1 );
       }
       break;
 
     default:
-      data_.back()->append( cp, 1 );
+      parsed->append( cp, 1 );
     }
   }
+  data_.push_back( parsed );
 }
 
 
@@ -217,6 +224,33 @@ TtTextTemplate::Document::ParseAsDocument( const char*& cp )
   std::string key( id_start, tmp - id_start );
   const char* document_start = tmp + 3;
 
+  class IllegalCloseException {};
+  const char* document_restart = nullptr;
+  auto closed_check = [&start_with, &key, &document_restart] ( const char* cp ) {
+    if ( *cp == '\0' ) {
+      throw IllegalCloseException();
+    }
+    if ( start_with( cp, "}%%" ) ) {
+      std::string close_str( "}%%" + key + "%%" );
+      document_restart = cp + (start_with( cp, close_str ) ? close_str.size() : 3);
+      return true;
+    }
+    return false;
+  };
+
+  auto result_buffer = std::make_shared<std::string>();
+  auto internal_document = std::shared_ptr<InternalDocument>( new InternalDocument( result_buffer ) );
+  try {
+    internal_document->ParseTextWithClosedCheck( document_start, closed_check );
+  }
+  catch ( IllegalCloseException ) {
+    return false;
+  }
+  document_table_[key] = internal_document;
+  cp = document_restart - 1;
+  data_.push_back( result_buffer );
+  return true;
+  /*
   auto is_closed = [&start_with, &key] ( const char* cp ) -> std::optional<unsigned int> {
     if ( start_with( cp, "}%%" ) ) {
       std::string close_str( "}%%" + key + "%%" );
@@ -238,6 +272,7 @@ TtTextTemplate::Document::ParseAsDocument( const char*& cp )
     }
   }
   return false;
+   */
 }
 
 

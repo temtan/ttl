@@ -27,6 +27,11 @@ namespace TtTextTemplate {
     void ParseFile( const std::string& path );
     void ParseText( const std::string& template_text );
 
+  private:
+    using ClosedCheckFunction = std::function<bool ( const char* )>;
+    void ParseTextWithClosedCheck( const char* text_start, ClosedCheckFunction check_function );
+
+  public:
     bool HasKey( const std::string& key );
     bool HasReplaceKey( const std::string& key );
     bool HasDocumentKey( const std::string& key );
