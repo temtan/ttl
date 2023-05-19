@@ -21,11 +21,18 @@
 #define PCA( type, obj ) (printf( "%s(%d) : %s = " type "\n", FILENAME__, __LINE__, #obj, (obj) ), fflush( stdout ))
 #define PCC( c )         PCA( "%c", c )
 #define PCI( i )         PCA( "%d", i )
+#define PCX( x )         PCA( "0x%X", x )
 #define PCP( p )         PCA( "%p", p )
-#define PCS( s )         PCA( "%s", s )
+#define PCS( s )         PCS_BODY( s, #s, FILENAME__, __LINE__ )
 #define PCF( f )         PCA( "%f", f )
-#define PCSS( s )        (printf( "%s(%d) : %s = %s\n", FILENAME__, __LINE__, #s, (s).c_str() ), fflush( stdout ))
-
+#define PCLL( l )        PCA( "%lld", l )
+#define PCLF( d )        PCA( "%lf", d )
+#define PCB( b )         (printf( "%s(%d) : %s = %s\n", FILENAME__, __LINE__, #b, (b) ? "true" : "false" ), fflush( stdout ))
+inline void PCS_BODY( const char* s, const char* name, const char* f, unsigned int l ) {
+  printf( "%s(%d) : %s = %s\n", f, l, name, s );
+  fflush( stdout );
+}
+inline void PCS_BODY( const std::string& s, const char* name, const char* f, unsigned int l  ) { PCS_BODY( s.c_str(), name, f, l ); }
 
 // -- PerformanceCounter -------------------------------------------------
 class PerformanceCounter {

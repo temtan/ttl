@@ -1,3 +1,3 @@
 
 
-cl /nologo /I ../ /MT /EHsc /DDEBUG test.cpp ../lib/x86/ttl.lib
+cl /nologo /std:c++latest /I ../ /MT /EHsc /DDEBUG test.cpp ../lib/x64/ttl.lib
