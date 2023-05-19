@@ -141,6 +141,5 @@ public:
 // #undef REGISTER
 // }
 // 
-// template <>
 // TtEnumTable<Foo>
 // TtEnumBase<Foo>::TABLE;

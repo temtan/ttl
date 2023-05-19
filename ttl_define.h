@@ -41,7 +41,7 @@ inline void PCS_BODY( const char* s, const char* name, const char* f, unsigned i
   printf( "%s(%d) : %s = %s\n", f, l, name, s );
   fflush( stdout );
 }
-inline void PCS_BODY( const std::string& s, const char* name, const char* f, unsigned int l  ) { PCS_BODY( str.c_str(), name, f, l ); }
+inline void PCS_BODY( const std::string& s, const char* name, const char* f, unsigned int l  ) { PCS_BODY( s.c_str(), name, f, l ); }
 
 
 #  include "tt_utility.h"

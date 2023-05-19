@@ -613,7 +613,6 @@ TtEnumTable<TtWindow::ShowState>::TtEnumTable( void ) {
 #undef REGISTER
 }
 
-template <>
 TtEnumTable<TtWindow::ShowState>
 TtEnumBase<TtWindow::ShowState>::TABLE;
 

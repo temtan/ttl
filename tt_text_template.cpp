@@ -76,26 +76,31 @@ TtTextTemplate::Document::ParseText( const std::string& template_text )
 void
 TtTextTemplate::Document::ParseTextWithClosedCheck( const char* text_start, ClosedCheckFunction check_function )
 {
-  auto parsed = std::make_shared<std::string>();
+  data_.push_back( std::make_shared<std::string>() );
   for ( const char* cp = text_start; NOT( check_function( cp ) ); ++cp ) {
     switch ( *cp ) {
     case '@':
-      if ( NOT( this->ParseAsReplace( cp ) ) ) {
-        parsed->append( cp, 1 );
+      if ( this->ParseAsReplace( cp ) ) {
+        data_.push_back( std::make_shared<std::string>() );
+      }
+      else {
+        data_.back()->append( cp, 1 );
       }
       break;
 
     case '%':
-      if ( NOT( this->ParseAsDocument( cp ) ) ) {
-        parsed->append( cp, 1 );
+      if ( this->ParseAsDocument( cp ) ) {
+        data_.push_back( std::make_shared<std::string>() );
+      }
+      else {
+        data_.back()->append( cp, 1 );
       }
       break;
 
     default:
-      parsed->append( cp, 1 );
+      data_.back()->append( cp, 1 );
     }
   }
-  data_.push_back( parsed );
 }
 
 
@@ -165,7 +170,7 @@ TtTextTemplate::Document::ParseAsReplace( const char*& cp )
   }
 
   const char* id_start = cp + 2;
-  for ( const char* tmp = id_start + 1; tmp != '\0'; ++tmp ) {
+  for ( const char* tmp = id_start + 1; *tmp != '\0'; ++tmp ) {
     if ( isalnum( *tmp ) || *tmp == '_' ) {
       continue;
     }
@@ -180,7 +185,6 @@ TtTextTemplate::Document::ParseAsReplace( const char*& cp )
       }
 
       cp = tmp + 1;
-      data_.push_back( std::make_shared<std::string>() );
       return true;
     }
     else {

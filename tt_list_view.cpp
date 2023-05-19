@@ -587,7 +587,8 @@ TtListView::InsertNewColumn( unsigned int index )
 {
   LVCOLUMN tmp = {LVCF_TEXT | LVCF_SUBITEM};
   tmp.iSubItem = index;
-  tmp.pszText = "";
+  char empty_text[] = "";
+  tmp.pszText = empty_text;
   int ret = ListView_InsertColumn( handle_, tmp.iSubItem, &tmp );
   if ( ret == -1 ) {
     throw TT_WIN_SYSTEM_CALL_EXCEPTION( REAL_FUNC_NAME_OF( ListView_InsertColumn ) );

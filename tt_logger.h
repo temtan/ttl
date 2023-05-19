@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <string>
 
+#include "tt_utility.h"
+
 
 class TtLogger;
 

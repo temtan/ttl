@@ -51,6 +51,22 @@ str_( str )
 {
 }
 
+template <>
+TtString::Appender&
+TtString::Appender::operator << <std::string>( const std::string& value )
+{
+  str_.append( value );
+  return *this;
+}
+
+template <>
+TtString::Appender&
+TtString::Appender::operator << <const char*>( const char* const& value )
+{
+  str_.append( value );
+  return *this;
+}
+
 
 std::string
 TtString::Replace( const std::string& source, const std::string& pattern, const std::string& replacement )

@@ -19,24 +19,24 @@ namespace TtString {
 
     explicit HeapString( const std::string& str ) :
     HeapString( str.size() + 1 ) {
-      strncpy_s( pointer_.get(), capacity_, str.c_str(), str.size() + 1 );
+      strncpy_s( ArrayType::pointer_.get(), ArrayType::capacity_, str.c_str(), str.size() + 1 );
     }
 
-    explicit HeapString( unsigned int capacity, const std::string& str ) :
+    explicit HeapString( size_t capacity, const std::string& str ) :
     ArrayType( std::max( capacity, str.size() ) + 1 ) {
-      strncpy_s( pointer_.get(), capacity_, str.c_str(), str.size() + 1 );
+      strncpy_s( ArrayType::pointer_.get(), ArrayType::capacity_, str.c_str(), str.size() + 1 );
     }
 
     void ExtendCapacity( size_t increasing ) {
-      size_t new_capacity = capacity_ + increasing;
-      decltype( pointer_ ) tmp( new char[new_capacity + 1] );
-      memcpy( tmp.get(), pointer_.get(), capacity_ );
-      capacity_  = new_capacity;
-      pointer_ = std::move( tmp );
+      size_t new_capacity = ArrayType::capacity_ + increasing;
+      decltype( ArrayType::pointer_ ) tmp( new char[new_capacity + 1] );
+      memcpy( tmp.get(), ArrayType::pointer_.get(), ArrayType::capacity_ );
+      ArrayType::capacity_  = new_capacity;
+      ArrayType::pointer_ = std::move( tmp );
     }
 
     std::string ToString( void ) {
-      return std::string( pointer_.get() );
+      return std::string( ArrayType::pointer_.get() );
     }
   };
 
@@ -83,21 +83,4 @@ namespace TtString {
     std::vector<std::string> Split( const std::string& source, char delimiter );
 
   int Compare( const std::string& x, const std::string& y );
-}
-
-// -- “ÁŽê‰»‚ÌŽÀ‘• -------------------------------------------------------
-template <>
-TtString::Appender&
-TtString::Appender::operator << <std::string>( const std::string& value )
-{
-  str_.append( value );
-  return *this;
-}
-
-template <>
-TtString::Appender&
-TtString::Appender::operator << <const char*>( const char* const& value )
-{
-  str_.append( value );
-  return *this;
 }

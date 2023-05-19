@@ -114,7 +114,6 @@ TtEnumTable<TtProcess::Priority>::TtEnumTable( void ) {
 #undef REGISTER
 }
 
-template <>
 TtEnumTable<TtProcess::Priority>
 TtEnumBase<TtProcess::Priority>::TABLE;
 

@@ -7,6 +7,7 @@
 #include <sstream>
 #include <memory>
 #include <functional>
+#include <algorithm>
 
 #include "ttl_define.h"
 #include "tt_windows_h_include.h"
@@ -106,7 +107,7 @@ namespace TtUtility {
   };
 
   // -- WindowsHandleHolder ----------------------------------------------
-  template <class TYPE, TYPE null_value = NULL>
+  template <class TYPE, TYPE null_value = nullptr>
   class WindowsHandleHolder : private std::shared_ptr<TYPE> {
   public:
     using DestroyFunction = std::function<void ( void )>;
