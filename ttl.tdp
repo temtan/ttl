@@ -137,6 +137,7 @@ Element131=others	0	0
 Element132=ttl.tdp.nut	1	131
 Element133=history.txt	1	131
 Element134=backup.rb	1	131
+Element135=clean_all.rb	1	131
 [Structure0]
 Name=Debug
 Platform=X86
