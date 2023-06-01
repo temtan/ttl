@@ -80,7 +80,9 @@ namespace TtString {
   std::string RemoveCR( const std::string& source );
   std::string AddCR( const std::string& source );
 
-    std::vector<std::string> Split( const std::string& source, char delimiter );
+  std::vector<std::string> Split( const std::string& source, char delimiter );
 
   int Compare( const std::string& x, const std::string& y );
+
+  std::string UTF8ToCP932( const std::string& str );
 }

@@ -262,6 +262,40 @@ TtString::Compare( const std::string& x, const std::string& y )
 }
 
 
+std::string
+TtString::UTF8ToCP932( const std::string& str )
+{
+  PCSTR target = str.c_str();
+  int target_size = static_cast<int>( str.size() );
+
+  DWORD w_flag = MB_PRECOMPOSED;
+
+  int w_buffer_size = ::MultiByteToWideChar( CP_UTF8, w_flag, target, target_size, 0, 0 );
+  if ( w_buffer_size == 0 ) {
+    return "";
+  }
+  std::shared_ptr<wchar_t[]> w_buffer = std::make_shared<wchar_t[]>( w_buffer_size + 1 );
+  int ret = ::MultiByteToWideChar( CP_UTF8, w_flag, target, target_size, w_buffer.get(), w_buffer_size );
+  if ( ret == 0 ) {
+    throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::MultiByteToWideChar ) );
+  }
+
+  DWORD m_flag = WC_NO_BEST_FIT_CHARS;
+
+  int m_buffer_size = ::WideCharToMultiByte( CP_ACP, m_flag, w_buffer.get(), w_buffer_size, 0, 0, 0, 0 );
+  if ( m_buffer_size == 0 ) {
+    return "";
+  }
+  std::shared_ptr<char[]> m_buffer = std::make_shared<char[]>( m_buffer_size + 1 );
+
+  ret = ::WideCharToMultiByte( CP_ACP, m_flag, w_buffer.get(), w_buffer_size, m_buffer.get(), m_buffer_size, 0, 0 );
+  if ( ret == 0 ) {
+    throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::WideCharToMultiByte ) );
+  }
+  return std::string( m_buffer.get() );
+}
+
+
 #ifdef TT_MAKE_TEMPLATE_INSTANCE_
 template class TtString::HeapString<TtUtility::UniqueArray<char>>;
 template class TtString::HeapString<TtUtility::SharedArray<char>>;
