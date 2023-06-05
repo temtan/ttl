@@ -158,8 +158,8 @@ template TtUtility::DestructorCall::DestructorCall( void (*)( void ) );
 template class TtUtility::UniqueArray<int>;
 template class TtUtility::SharedArray<int>;
 
-template class TtUtility::Serialize<int>;
-template class TtUtility::Deserialize<int>;
+template std::string TtUtility::Serialize<int>( int& );
+template bool TtUtility::Deserialize<int>( const std::string& data, int& );
 
 template int&       TtUtility::Bigger( int&, int& );
 template const int& TtUtility::ConstBigger( const int&, const int& );

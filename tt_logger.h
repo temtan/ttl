@@ -4,7 +4,9 @@
 
 #include <stdio.h>
 #include <string>
+#include <optional>
 
+#include "tt_file_stream.h"
 #include "tt_utility.h"
 
 
@@ -23,10 +25,10 @@ public:
   static TtLogFlusher FLUSH;
 
   explicit TtLogger( void );
-  explicit TtLogger( const std::string& filename );
+  explicit TtLogger( const std::string& path );
   virtual ~TtLogger();
 
-  const std::string& GetFileName( void );
+  const std::string& GetPath( void );
 
   void Open( void );
   void Close( void );
@@ -45,9 +47,9 @@ protected:
   virtual void Postfix( std::string& str );
 
 protected:
-  std::string       filename_;
-  FILE*             file_stream_;
-  std::string       buffer_;
+  std::string                 path_;
+  std::optional<TtFileWriter> file_writer_;
+  std::string                 buffer_;
 };
 
 

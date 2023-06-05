@@ -6,6 +6,7 @@
 #include "ttl_define.h"
 #include "tt_exception.h"
 #include "tt_utility.h"
+#include "tt_file_stream.h"
 
 #include "tt_text_template.h"
 
@@ -43,27 +44,10 @@ TtTextTemplate::Document::ResetRegistered( void )
 void
 TtTextTemplate::Document::ParseFile( const std::string& path )
 {
-  FILE* file;
-  int error_number = fopen_s( &file, path.c_str(), "r" );
-  if ( error_number != 0 ) {
-    throw TtFileAccessException( path, error_number );
-  }
-  std::string template_text;
-  {
-    TtUtility::DestructorCall file_closer( [&file]( void ) { fclose( file ); } );
-
-    for (;;) {
-      int c = fgetc( file );
-      if ( c == EOF ) {
-        // ferror ÇÕê≥èÌÇÃèÍçá 0 Çï‘Ç∑
-        if ( ferror( file ) == 0 && feof( file ) ) {
-          break;
-        }
-        throw TT_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( fgetc ), 0 );
-      }
-      template_text.append( 1, static_cast<char>( c ) );
-    }
-  }
+  std::string template_text = [&] ( void ) {
+    TtFileReader reader( path, false );
+    return reader.ReadAll();
+  }();
   this->ParseText( template_text );
 }
 

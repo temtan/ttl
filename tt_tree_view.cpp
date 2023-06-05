@@ -704,8 +704,12 @@ TtTreeView::Clear( void )
 }
 
 #ifdef TT_MAKE_TEMPLATE_INSTANCE_
-template void TtTreeItem::SetParameter<int>( int );
-template int TtTreeItem::GetParameter<int>( void );
-template void TtTreeItem::SetParameter<int*>( int* );
-template int* TtTreeItem::GetParameter<int*>( void );
+#pragma warning(disable : 4311)
+#pragma warning(disable : 4312)
+#pragma warning(disable : 4302)
+template void TtTreeItem::SetParameterAs<int>( int );
+template void TtTreeItem::SetParameterAs<int*>( int* );
+
+template int TtTreeItem::GetParameterAs<int>( void );
+template int* TtTreeItem::GetParameterAs<int*>( void );
 #endif

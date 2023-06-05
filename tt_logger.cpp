@@ -22,9 +22,9 @@ TtLogger( TtPath::GetExecutingFilePath() + ".log" )
 {
 }
 
-TtLogger::TtLogger( const std::string& filename ) :
-filename_( filename ),
-file_stream_( nullptr ),
+TtLogger::TtLogger( const std::string& path ) :
+path_( path ),
+file_writer_( std::nullopt ),
 buffer_()
 {
 }
@@ -35,29 +35,25 @@ TtLogger::~TtLogger()
 }
 
 const std::string&
-TtLogger::GetFileName( void )
+TtLogger::GetPath( void )
 {
-  return filename_;
+  return path_;
 }
 
 void
 TtLogger::Open( void )
 {
-  if ( file_stream_ != nullptr ) {
+  if ( file_writer_ ) {
     throw TtInvalidOperationException( typeid( *this ) );
   }
-  int error_number = fopen_s( &file_stream_, filename_.c_str(), "a" );
-  if ( error_number != 0 ) {
-    throw TtFileAccessException( filename_, error_number );
-  }
+  file_writer_.emplace( path_, true, false );
 }
 
 void
 TtLogger::Close( void )
 {
-  if ( file_stream_ != nullptr ) {
-    fclose( file_stream_ );
-    file_stream_ = nullptr;
+  if ( file_writer_ ) {
+    file_writer_.reset();
   }
 }
 
@@ -97,9 +93,7 @@ TtLogger::Put( const std::string& value )
   this->Prefix( tmp );
   tmp.append( value );
   this->Postfix( tmp );
-  if ( fputs( tmp.c_str(), file_stream_ ) == EOF ) {
-    throw TT_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( fputs ), errno );
-  }
+  file_writer_->WriteString( tmp );
 }
 
 void
