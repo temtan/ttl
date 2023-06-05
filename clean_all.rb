@@ -22,3 +22,12 @@ Dir.glob( this_dir + "/*.tdp" ) {|file|
     end
   }
 }
+
+require 'fileutils'
+
+[
+"./lib/x86/ttl.lib",
+"./lib/x64/ttl.lib",
+].each {|file|
+  FileUtils.rm( file, **{:force => true, :verbose => true} )
+}
