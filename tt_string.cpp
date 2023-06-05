@@ -299,6 +299,4 @@ TtString::UTF8ToCP932( const std::string& str )
 #ifdef TT_MAKE_TEMPLATE_INSTANCE_
 template class TtString::HeapString<TtUtility::UniqueArray<char>>;
 template class TtString::HeapString<TtUtility::SharedArray<char>>;
-
-template TtString::Appender& TtString::Appender::operator << <const char*const>( const char*const& );
 #endif
