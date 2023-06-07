@@ -5,6 +5,7 @@
 #include <string>
 #include <optional>
 
+#include "tt_exception.h"
 
 // -- TtFileHandleHolder -------------------------------------------------
 class TtFileHandleHolder {
