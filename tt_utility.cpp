@@ -39,7 +39,7 @@ TtUtility::StringToDouble( const std::string& str, double* ret )
   char* endptr;
   errno = 0;
   *ret = strtod( str.c_str(), &endptr );
-  return *endptr == '\0' && NOT( *ret == 0.0 && endptr != str.c_str() ) && errno == 0;
+  return *endptr == '\0' && NOT( *ret == 0.0 && endptr == str.c_str() ) && errno == 0;
 }
 
 template <>
