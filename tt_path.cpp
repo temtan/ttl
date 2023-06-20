@@ -215,3 +215,62 @@ TtPath::ExpandPath( const std::string& path )
   ::PathSearchAndQualify( path.c_str(), buf.GetPointer(), static_cast<UINT>( buf.GetCapacity() ) );
   return buf.ToString();
 }
+
+
+std::string
+TtPath::GetFileNotExistPathFrom( const std::string& path )
+{
+  if ( NOT( TtPath::FileExists( path ) ) ) {
+    return path;
+  }
+  for ( unsigned int i = 1; i < std::numeric_limits<unsigned int>::max(); ++i ) {
+    auto new_path = TtPath::ChangeExtension( path, TtUtility::ToStringFrom( i ) ) + TtPath::FindExtension( path );
+    if ( NOT( TtPath::FileExists( new_path ) ) ) {
+      return new_path;
+    }
+  }
+  throw TT_INTERNAL_EXCEPTION;
+}
+
+
+std::string
+TtPath::RemoveCanNotUseCharacterAsFilePathFrom( const std::string& path )
+{
+  auto buffer = std::make_unique<char[]>( path.size() + 1 );
+  char* c = buffer.get();
+  const char* s = path.c_str();
+  if ( NOT( TtPath::IsRelative( path ) ) ) {
+    *c = *s;
+    ++c;
+    ++s;
+    *c = *s;
+    ++c;
+    ++s;
+  }
+  while ( *s != '\0' ) {
+    *c = *s;
+    switch ( *s ) {
+    case '/':
+    case ':':
+    case '*':
+    case '?':
+    case '"':
+    case '<':
+    case '>':
+      break;
+
+    case '|':
+      if ( s != path.c_str() && (static_cast<unsigned char>( s[-1] ) >= 0x81 && static_cast<unsigned char>( s[-1] ) <= 0x9F) ) {
+        ++c;
+      }
+      break;
+
+    default:
+      ++c;
+      break;
+    }
+    ++s;
+  }
+  *c = *s;
+  return buffer.get();
+}

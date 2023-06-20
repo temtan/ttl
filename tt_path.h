@@ -42,4 +42,8 @@ namespace TtPath {
   std::string GetExecutingDirectoryPath( void );
 
   std::string ExpandPath( const std::string& path );
+
+  std::string GetFileNotExistPathFrom( const std::string& path );
+
+  std::string RemoveCanNotUseCharacterAsFilePathFrom( const std::string& path );
 }
