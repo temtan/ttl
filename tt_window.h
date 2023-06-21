@@ -232,6 +232,7 @@ protected:
 class TtExtraordinarilyWindow : public TtWindow {
 public:
   static TtExtraordinarilyWindow Desktop;
+  static TtExtraordinarilyWindow Null;
 
 public:
   explicit TtExtraordinarilyWindow( HWND handle );

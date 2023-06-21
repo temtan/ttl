@@ -241,8 +241,7 @@ TtFileDialog::Reset( void )
 bool
 TtFileDialog::ShowDialog( void )
 {
-  TtStatic dummy;
-  return this->ShowDialog( dummy );
+  return this->ShowDialog( TtExtraordinarilyWindow::Null );
 }
 
 

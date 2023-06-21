@@ -55,8 +55,7 @@ TtPickIconDialog::SetIndex( int index )
 bool
 TtPickIconDialog::ShowDialog( void )
 {
-  TtStatic dummy;
-  return this->ShowDialog( dummy );
+  return this->ShowDialog( TtExtraordinarilyWindow::Null );
 }
 
 

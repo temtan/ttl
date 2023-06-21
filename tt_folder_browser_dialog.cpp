@@ -68,6 +68,12 @@ TtFolderBrowserDialog::Reset( void )
 }
 
 bool
+TtFolderBrowserDialog::ShowDialog( void )
+{
+  return this->ShowDialog( TtExtraordinarilyWindow::Null );
+}
+
+bool
 TtFolderBrowserDialog::ShowDialog( TtWindow& parent )
 {
   BROWSEINFO bi = {0};

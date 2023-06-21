@@ -22,6 +22,7 @@ public:
   void SetDescription( const std::string& description );
 
   void Reset( void );
+  bool ShowDialog( void );
   bool ShowDialog( TtWindow& parent );
 
 private:

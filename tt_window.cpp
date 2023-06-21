@@ -947,6 +947,9 @@ TtWindow::DragAcceptFiles( bool flag )
 TtExtraordinarilyWindow
 TtExtraordinarilyWindow::Desktop( ::GetDesktopWindow() );
 
+TtExtraordinarilyWindow
+TtExtraordinarilyWindow::Null( NULL );
+
 TtExtraordinarilyWindow::TtExtraordinarilyWindow( HWND handle ) :
 TtWindow()
 {
