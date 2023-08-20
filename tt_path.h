@@ -30,7 +30,7 @@ namespace TtPath {
   std::string CompactPath( const std::string& src, unsigned int max );
   std::string QuoteIfHasSpaces( const std::string& path );
   std::string RemoveExtension( const std::string& path );
-  std::string ChangeExtension( const std::string& path, const std::string& ext );
+  std::string ChangeExtension( const std::string& path, const std::string& ext ); // ext without dot
   std::optional<std::string> GetRelativePathTo( const std::string& from, bool from_is_directory, const std::string to, bool to_is_directory );
   std::optional<std::string> CanonicalizeFrom( const std::string& path );
   std::string Canonicalize( const std::string& path );

@@ -154,7 +154,7 @@ void
 TtFileWriter::WriteString( const std::string& str )
 {
   auto ret = std::fputs( str.c_str(), file_ );
-  if ( ret != EOF ) {
+  if ( ret == EOF ) {
     throw TtFileAccessException( path_, errno );
   }
 };
