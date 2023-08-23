@@ -85,7 +85,7 @@ TtDialog::CreatePrimitive( CreateParameter& parameter )
 }
 
 int
-TtDialog::ShowDialog( TtForm& parent )
+TtDialog::ShowDialog( TtWindow& parent )
 {
   parent_ = &parent;
   instance_handle_ = parent.GetInstanceHandle();
@@ -144,7 +144,7 @@ TtDialogModeless::~TtDialogModeless()
 
 
 int
-TtDialogModeless::ShowDialog( TtForm& parent )
+TtDialogModeless::ShowDialog( TtWindow& parent )
 {
   parent_ = &parent;
   return this->ShowDialogPrimitive( parent.GetInstanceHandle(), parent.GetHandle() );

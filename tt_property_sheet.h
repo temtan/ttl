@@ -86,7 +86,7 @@ public:
 
   void AddPage( Page& page );
 
-  bool ShowDialog( TtForm& parent );
+  bool ShowDialog( TtWindow& parent );
 
 private:
   std::vector<Page*> pages_;

@@ -21,7 +21,7 @@ public:
 
   virtual void CreatePrimitive( CreateParameter& parameter ) override;
 
-  virtual int ShowDialog( TtForm& parent );
+  virtual int ShowDialog( TtWindow& parent );
   virtual void EndDialog( int result );
 
   int GetResult( void );
@@ -39,7 +39,7 @@ public:
 
   virtual ~TtDialogModeless();
 
-  virtual int ShowDialog( TtForm& parent ) override;
+  virtual int ShowDialog( TtWindow& parent ) override;
   int ShowDialog( void );
   int ShowDialogPrimitive( HINSTANCE instance_handle, HWND parent );
 

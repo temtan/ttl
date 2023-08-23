@@ -250,7 +250,7 @@ TtPropertySheet::AddPage( Page& page )
 
 
 bool
-TtPropertySheet::ShowDialog( TtForm& parent )
+TtPropertySheet::ShowDialog( TtWindow& parent )
 {
   parent_ = &parent;
   instance_handle_ = parent.GetInstanceHandle();
