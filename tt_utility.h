@@ -77,6 +77,15 @@ namespace TtUtility {
     return function ? function : [default_value] ( Args... ) { return default_value; };
   }
 
+  // ジェネリックラムダ用に引数として型を渡す為の型
+  template <class TYPE>
+  class TypeTag {
+  public:
+    static TypeTag<TYPE> Make( void ) {
+      return TypeTag<TYPE>();
+    }
+  };
+
   // ----- 一時的配列
   template <class TYPE>
   class UniqueArray {
