@@ -13,6 +13,39 @@
 #pragma comment(lib, "kernel32.lib")
 
 
+namespace {
+  std::string UTF16Serialize( const std::wstring& str ) {
+    const unsigned char* c = reinterpret_cast<const unsigned char*>( str.c_str() );
+    std::string result;
+    for ( unsigned int i = 0; i < str.size() * sizeof( std::wstring::value_type ); ++i ) {
+      char buf[16];
+      sprintf_s( buf, sizeof( buf ), "%02x", *c );
+      result.append( buf );
+      ++c;
+    }
+    return result;
+  }
+
+  std::wstring UTF16Deserialize( const std::string& data ) {
+    const char* c = data.c_str();
+    auto target_buf = std::make_unique<unsigned char[]>( data.size() / 2 );
+    unsigned char* target = target_buf.get();
+    for ( unsigned int i = 0; i < data.size() / 2; ++i ) {
+      char buf[3] = {*c, *(c + 1), 0};
+      unsigned int ret;
+      if ( NOT( TtUtility::StringToInteger( buf, reinterpret_cast<int*>( &ret ), 16 ) ) ) {
+        return L"";
+      }
+      *target = static_cast<unsigned char>( ret );
+      ++target;
+      c += 2;
+    }
+    *target = '\0';
+    return reinterpret_cast<wchar_t*>( target_buf.get() );
+  }
+}
+
+
 // -- TtIniFile ----------------------------------------------------------
 TtIniFile::TtIniFile( const std::string& filename, unsigned int buffer_size ) :
 filename_( TtPath::IsRelative( filename ) ? TtPath::ExpandPath( filename ) : filename ),
@@ -185,6 +218,18 @@ TtIniSection::SetString( const std::string& key, const std::string& value )
     [] ( void ) {
       throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::WritePrivateProfileString ) );
     } );
+}
+
+std::wstring
+TtIniSection::GetStringUTF16( const std::string& key, const std::wstring& default_value )
+{
+  return UTF16Deserialize( this->GetString( key, UTF16Serialize( default_value ) ) );
+}
+
+void
+TtIniSection::SetStringUTF16( const std::string& key, const std::wstring& value )
+{
+  this->SetString( key, UTF16Serialize( value ) );
 }
 
 

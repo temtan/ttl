@@ -66,6 +66,9 @@ public:
   std::string GetString( const std::string& key, const std::string& default_value = "" );
   void        SetString( const std::string& key, const std::string& value );
 
+  std::wstring GetStringUTF16( const std::string& key, const std::wstring& default_value = L"" );
+  void         SetStringUTF16( const std::string& key, const std::wstring& value );
+
   template <class TYPE>
   TYPE GetEnum( const std::string& key, TYPE default_value ) {
     std::string tmp = this->GetString( key );
