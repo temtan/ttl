@@ -84,5 +84,14 @@ namespace TtString {
 
   int Compare( const std::string& x, const std::string& y );
 
-  std::string UTF8ToCP932( const std::string& str );
+  std::wstring MultiByteToUTF16( UINT code_page, const std::string& str );
+  std::string  UTF16ToMultiByte( UINT code_page, const std::wstring& str );
+
+  std::wstring CP932ToUTF16( const std::string& str );
+  std::string  UTF16ToCP932( const std::wstring& str );
+  std::wstring UTF8ToUTF16( const std::string& str );
+  std::string  UTF16ToUTF8( const std::wstring& str );
+
+  std::string  UTF8ToCP932( const std::string& str );
+  std::string  CP932ToUTF8( const std::string& str );
 }

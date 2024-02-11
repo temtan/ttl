@@ -261,38 +261,78 @@ TtString::Compare( const std::string& x, const std::string& y )
   return ::strcmp( x.c_str(), y.c_str() );
 }
 
-
-std::string
-TtString::UTF8ToCP932( const std::string& str )
+std::wstring
+TtString::MultiByteToUTF16( UINT code_page, const std::string& str )
 {
   PCSTR target = str.c_str();
   int target_size = static_cast<int>( str.size() );
 
   DWORD w_flag = MB_PRECOMPOSED;
 
-  int w_buffer_size = ::MultiByteToWideChar( CP_UTF8, w_flag, target, target_size, 0, 0 );
+  int w_buffer_size = ::MultiByteToWideChar( code_page, w_flag, target, target_size, 0, 0 );
   if ( w_buffer_size == 0 ) {
-    return "";
+    return L"";
   }
   std::shared_ptr<wchar_t[]> w_buffer = std::make_shared<wchar_t[]>( w_buffer_size + 1 );
-  int ret = ::MultiByteToWideChar( CP_UTF8, w_flag, target, target_size, w_buffer.get(), w_buffer_size );
+  int ret = ::MultiByteToWideChar( code_page, w_flag, target, target_size, w_buffer.get(), w_buffer_size );
   if ( ret == 0 ) {
     throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::MultiByteToWideChar ) );
   }
+  return std::wstring( w_buffer.get() );
+}
 
+std::string
+TtString::UTF16ToMultiByte( UINT code_page, const std::wstring& str )
+{
   DWORD m_flag = WC_NO_BEST_FIT_CHARS;
 
-  int m_buffer_size = ::WideCharToMultiByte( CP_ACP, m_flag, w_buffer.get(), w_buffer_size, 0, 0, 0, 0 );
+  int m_buffer_size = ::WideCharToMultiByte( code_page, m_flag, str.c_str(), static_cast<int>( str.size() ), 0, 0, 0, 0 );
   if ( m_buffer_size == 0 ) {
     return "";
   }
   std::shared_ptr<char[]> m_buffer = std::make_shared<char[]>( m_buffer_size + 1 );
 
-  ret = ::WideCharToMultiByte( CP_ACP, m_flag, w_buffer.get(), w_buffer_size, m_buffer.get(), m_buffer_size, 0, 0 );
+  auto ret = ::WideCharToMultiByte( code_page, m_flag, str.c_str(), static_cast<int>( str.size() ), m_buffer.get(), m_buffer_size, 0, 0 );
   if ( ret == 0 ) {
     throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::WideCharToMultiByte ) );
   }
   return std::string( m_buffer.get() );
+}
+
+std::wstring
+TtString::CP932ToUTF16( const std::string& str )
+{
+  return TtString::MultiByteToUTF16( 932, str );
+}
+
+std::string
+TtString::UTF16ToCP932( const std::wstring& str )
+{
+  return UTF16ToMultiByte( 932, str );
+}
+
+std::wstring
+TtString::UTF8ToUTF16( const std::string& str )
+{
+  return TtString::MultiByteToUTF16( CP_UTF8, str );
+}
+
+std::string
+TtString::UTF16ToUTF8( const std::wstring& str )
+{
+  return UTF16ToMultiByte( CP_UTF8, str );
+}
+
+std::string
+TtString::UTF8ToCP932( const std::string& str )
+{
+  return UTF16ToMultiByte( 932, TtString::MultiByteToUTF16( CP_UTF8, str ) );
+}
+
+std::string
+TtString::CP932ToUTF8( const std::string& str )
+{
+  return UTF16ToMultiByte( CP_UTF8, TtString::MultiByteToUTF16( 932, str ) );
 }
 
 
