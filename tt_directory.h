@@ -14,7 +14,7 @@ public:
 
   const std::string& GetPath( void ) const;
 
-  using Filter = std::function<bool (const std::string& path )>;
+  using Filter = std::function<bool ( const std::string& path )>;
   static Filter All;
   static Filter FileOnly;
   static Filter DirectoryOnly;

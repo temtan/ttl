@@ -3,6 +3,7 @@
 #pragma once
 
 #include <functional>
+#include <string>
 
 #include "tt_windows_h_include.h"
 
