@@ -28,6 +28,7 @@
 #  define PCD()            (printf( "%s(%d) : gone.\n", __FILE__, __LINE__ ), fflush( stdout ))
 #  define PCA( type, obj ) (printf( "%s(%d) : %s = " type "\n", __FILE__, __LINE__, #obj, (obj) ), fflush( stdout ))
 #  define PCC( c )         PCA( "%c", c )
+#  define PCWC( c )        PCA( "%lc", c )
 #  define PCI( i )         PCA( "%d", i )
 #  define PCX( x )         PCA( "0x%X", x )
 #  define PCP( p )         PCA( "%p", p )
@@ -42,6 +43,12 @@ inline void PCS_BODY( const char* s, const char* name, const char* f, unsigned i
   fflush( stdout );
 }
 inline void PCS_BODY( const std::string& s, const char* name, const char* f, unsigned int l  ) { PCS_BODY( s.c_str(), name, f, l ); }
+
+inline void PCS_BODY( const wchar_t* s, const char* name, const char* f, unsigned int l ) {
+  wprintf( L"%hs(%d) : %hs = %s\n", f, l, name, s );
+  fflush( stdout );
+}
+inline void PCS_BODY( const std::wstring& s, const char* name, const char* f, unsigned int l ) { PCS_BODY( s.c_str(), name, f, l ); }
 
 
 #  include "tt_utility.h"
