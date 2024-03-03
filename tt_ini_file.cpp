@@ -28,7 +28,7 @@ namespace {
 
   std::wstring UTF16Deserialize( const std::string& data ) {
     const char* c = data.c_str();
-    auto target_buf = std::make_unique<unsigned char[]>( data.size() / 2 );
+    auto target_buf = std::make_unique<unsigned char[]>( (data.size() / 2) + 2 );
     unsigned char* target = target_buf.get();
     for ( unsigned int i = 0; i < data.size() / 2; ++i ) {
       char buf[3] = {*c, *(c + 1), 0};
@@ -40,7 +40,8 @@ namespace {
       ++target;
       c += 2;
     }
-    *target = '\0';
+    target[0] = '\0';
+    target[1] = '\0';
     return reinterpret_cast<wchar_t*>( target_buf.get() );
   }
 }
