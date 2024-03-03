@@ -39,6 +39,12 @@ TtListViewColumn::GetIndex( void ) const
   return index_;
 }
 
+TtListView*
+TtListViewColumn::GetTreeView( void ) const
+{
+  return list_;
+}
+
 
 bool
 TtListViewColumn::IsValid( void )
@@ -162,6 +168,12 @@ int
 TtListViewItem::GetIndex( void ) const
 {
   return index_;
+}
+
+TtListView*
+TtListViewItem::GetTreeView( void ) const
+{
+  return list_;
 }
 
 

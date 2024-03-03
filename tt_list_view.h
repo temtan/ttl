@@ -25,6 +25,7 @@ public:
   void GetInfo( LVCOLUMN& info ) const;
   void SetInfo( LVCOLUMN& info );
   unsigned int GetIndex( void ) const;
+  TtListView* GetTreeView( void ) const;
 
   bool IsValid( void );
   bool IsInvalid( void );
@@ -77,6 +78,7 @@ public:
   void GetInfo( LVITEM& info ) const;
   void SetInfo( LVITEM& info );
   int GetIndex( void ) const;
+  TtListView* GetTreeView( void ) const;
 
   bool IsValid( void );
   bool IsInvalid( void );
