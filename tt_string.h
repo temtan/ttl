@@ -5,6 +5,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <format>
 
 #include "tt_utility.h"
 
@@ -47,22 +48,34 @@ namespace TtString {
   std::vector<std::string> ToVectorFromRangedString( const char* buf, size_t buf_size );
 
   // •¶Žš—ñ’Ç‰Á—p
+  template <class STRING_TYPE>
   class Appender {
   public:
-    explicit Appender( std::string& str );
+    using CHAR_TYPE = STRING_TYPE::value_type;
+
+  public:
+    explicit Appender( STRING_TYPE& str ) : str_( str ) {}
 
     template <class TYPE>
     Appender& operator <<( const TYPE& value ) {
-      str_.append( TtUtility::ToStringFrom( value ) );
+      str_.append( std::format( std::get<const CHAR_TYPE*>( std::make_tuple( "{}", L"{}" ) ), value ) );
       return *this;
     }
 
-    template <> Appender& operator << <std::string>( const std::string& value );
-    template <> Appender& operator << <const char*>( const char* const& value );
+    template <> Appender& operator << <STRING_TYPE>( const STRING_TYPE& value ) {
+      str_.append( value );
+      return *this;
+    }
+
+    template <> Appender& operator << <const CHAR_TYPE*>( const CHAR_TYPE* const& value ) {
+      str_.append( value );
+      return *this;
+    }
 
   private:
-    std::string& str_;
+    STRING_TYPE& str_;
   };
+
 
   std::string Replace( const std::string& source, const std::string& pattern, const std::string& replacement );
 

@@ -46,26 +46,8 @@ TtString::ToVectorFromRangedString( const char* buf, size_t buf_size )
 }
 
 
-TtString::Appender::Appender( std::string& str ) :
-str_( str )
-{
-}
-
-template <>
-TtString::Appender&
-TtString::Appender::operator << <std::string>( const std::string& value )
-{
-  str_.append( value );
-  return *this;
-}
-
-template <>
-TtString::Appender&
-TtString::Appender::operator << <const char*>( const char* const& value )
-{
-  str_.append( value );
-  return *this;
-}
+template class TtString::Appender<std::string>;
+template class TtString::Appender<std::wstring>;
 
 
 std::string
