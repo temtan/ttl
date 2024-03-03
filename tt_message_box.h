@@ -20,12 +20,9 @@
 #  endif
 #pragma warning(pop)
 
-
 // -- TtMessageBox -------------------------------------------------------
-class TtMessageBox {
-public:
-  class Icon {
-  public:
+namespace TtMessageBox {
+  struct Icon {
     static const unsigned int NONE        = 0;
     static const unsigned int EXCLAMATION = MB_ICONEXCLAMATION;
     static const unsigned int WARNING     = MB_ICONWARNING;
@@ -37,16 +34,14 @@ public:
     static const unsigned int HAND        = MB_ICONHAND;
   };
 
-  class DefaultButton {
-  public:
+  struct DefaultButton {
     static const unsigned int FIRST  = MB_DEFBUTTON1;
     static const unsigned int SECOND = MB_DEFBUTTON2;
     static const unsigned int THIRD  = MB_DEFBUTTON3;
     static const unsigned int FOURTH = MB_DEFBUTTON4;
   };
 
-  class Result {
-  public:
+  struct Result {
     static const int ABORT  = IDABORT;
     static const int CANCEL = IDCANCEL;
     static const int IGNORE = IDIGNORE;
@@ -56,76 +51,127 @@ public:
     static const int YES    = IDYES;
   };
 
-private:
-  static std::map<DWORD, TtMessageBox*> hook_table;
-  static std::map<DWORD, WNDPROC>       procedure_table;
+  // -- Origin -----------------------------------------------------------
+  class Origin {
+  private:
+    static std::map<DWORD, Origin*> hook_table;
+    static std::map<DWORD, WNDPROC> procedure_table;
 
-  static LRESULT CALLBACK Hook( int code, WPARAM w_param, LPARAM l_param );
-  static LRESULT CALLBACK Procedure( HWND handle, UINT msg, WPARAM w_param, LPARAM l_param );
+    static LRESULT CALLBACK Hook( int code, WPARAM w_param, LPARAM l_param );
+    static LRESULT CALLBACK Procedure( HWND handle, UINT msg, WPARAM w_param, LPARAM l_param );
 
-public:
-  explicit TtMessageBox( unsigned int       type,
-                         const std::string& message,
-                         const std::string& caption,
-                         unsigned int       icon );
+  public:
+    explicit Origin( unsigned int type, unsigned int icon );
 
-  unsigned int GetType( void ) const;
+    unsigned int GetType( void ) const;
 
-  const std::string& GetMessage( void ) const;
-  void SetMessage( const std::string& message );
-  void AppendMessage( const std::string& message );
-  TtString::Appender AppendMessage( void );
+    unsigned int GetIcon( void ) const;
+    void SetIcon( unsigned int icon );
 
-  const std::string& GetCaption( void ) const;
-  void SetCaption( const std::string& caption );
+    unsigned int GetDefaultButton( void ) const;
+    void SetDefaultButton( unsigned int button );
 
-  unsigned int GetIcon( void ) const;
-  void SetIcon( unsigned int icon );
+    int ShowDialog( void );
+    int ShowDialog( TtWindow& parent );
 
-  unsigned int GetDefaultButton( void ) const;
-  void SetDefaultButton( unsigned int button );
+  private:
+    virtual int CallSystemCall( void ) = 0;
 
-  int ShowDialog( void );
-  int ShowDialog( TtWindow& parent );
+  protected:
+    unsigned int type_;
+    unsigned int icon_;
+    unsigned int default_button_;
 
-private:
-  unsigned int type_;
-  std::string  message_;
-  std::string  caption_;
-  unsigned int icon_;
-  unsigned int default_button_;
+    HHOOK     hook_;
+    TtWindow* parent_;
+  };
 
-  HHOOK     hook_;
-  TtWindow* parent_;
-};
+  // -- Base -------------------------------------------------------------
+  template <class STRING_TYPE>
+  class Base : public Origin {
+  public:
+    using StringType = STRING_TYPE;
 
-// -- TtMessageBoxWithType ----------------------------------------------
-template <unsigned int type>
-class TtMessageBoxWithType : public TtMessageBox {
-public:
-  static int Show( const std::string& message,
-                   const std::string& caption = "",
-                   unsigned int       icon    = TtMessageBox::Icon::NONE ) {
-    return TtMessageBoxWithType<type>( message, caption, icon ).ShowDialog();
+  public:
+    explicit Base( unsigned int       type,
+                   const STRING_TYPE& message,
+                   const STRING_TYPE& caption,
+                   unsigned int       icon );
+
+    const STRING_TYPE& GetMessage( void ) const;
+    void SetMessage( const STRING_TYPE& message );
+    void AppendMessage( const STRING_TYPE& message );
+    TtString::Appender<STRING_TYPE> AppendMessage( void );
+
+    const STRING_TYPE& GetCaption( void ) const;
+    void SetCaption( const STRING_TYPE& caption );
+
+    virtual int CallSystemCall( void ) override;
+
+  private:
+    STRING_TYPE  message_;
+    STRING_TYPE  caption_;
+  };
+
+  // -- ANSI or UTF16 -----
+  using ANSIBox = Base<std::string>;
+  using UTF16Box = Base<std::wstring>;
+
+  template <unsigned int type, class BASE_TYPE>
+  class WithType : public BASE_TYPE {
+    using StringType = BASE_TYPE::StringType;
+
+  public:
+    static int Show( const StringType& message,
+                     const StringType& caption = StringType(),
+                     unsigned int      icon    = TtMessageBox::Icon::NONE ) {
+      return WithType<type, BASE_TYPE>( message, caption, icon ).ShowDialog();
+    }
+
+    static int Show( TtWindow&         parent,
+                     const StringType& message,
+                     const StringType& caption = StringType(),
+                     unsigned int      icon    = TtMessageBox::Icon::NONE ) {
+      return WithType<type, BASE_TYPE>( message, caption, icon ).ShowDialog( parent );
+    }
+
+  public:
+    explicit WithType( const StringType& message = StringType(),
+                       const StringType& caption = StringType(),
+                       unsigned int       icon    = TtMessageBox::Icon::NONE ) :
+    BASE_TYPE( type, message, caption, icon ) {}
+  };
+
+  namespace ANSI {
+    using Ok               = WithType<MB_OK,               ANSIBox>;
+    using OkCancel         = WithType<MB_OKCANCEL,         ANSIBox>;
+    using RetryCancel      = WithType<MB_RETRYCANCEL,      ANSIBox>;
+    using YesNo            = WithType<MB_YESNO,            ANSIBox>;
+    using YesNoCancel      = WithType<MB_YESNOCANCEL,      ANSIBox>;
+    using AbortRetryIgnore = WithType<MB_ABORTRETRYIGNORE, ANSIBox>;
   }
 
-  static int Show( TtWindow&          parent,
-                   const std::string& message,
-                   const std::string& caption = "",
-                   unsigned int       icon    = TtMessageBox::Icon::NONE ) {
-    return TtMessageBoxWithType<type>( message, caption, icon ).ShowDialog( parent );
+  namespace UTF16 {
+    using Ok               = WithType<MB_OK,               UTF16Box>;
+    using OkCancel         = WithType<MB_OKCANCEL,         UTF16Box>;
+    using RetryCancel      = WithType<MB_RETRYCANCEL,      UTF16Box>;
+    using YesNo            = WithType<MB_YESNO,            UTF16Box>;
+    using YesNoCancel      = WithType<MB_YESNOCANCEL,      UTF16Box>;
+    using AbortRetryIgnore = WithType<MB_ABORTRETRYIGNORE, UTF16Box>;
   }
 
-public:
-  explicit TtMessageBoxWithType<type>( const std::string& message = "",
-                                       const std::string& caption = "",
-                                       unsigned int       icon    = TtMessageBox::Icon::NONE ) :
-  TtMessageBox( type, message, caption, icon ) {}
-};
+  using Ok               = ANSI::Ok;
+  using OkCancel         = ANSI::OkCancel;
+  using RetryCancel      = ANSI::RetryCancel;
+  using YesNo            = ANSI::YesNo;
+  using YesNoCancel      = ANSI::YesNoCancel;
+  using AbortRetryIgnore = ANSI::AbortRetryIgnore;
+}
 
-using TtMessageBoxOk               = TtMessageBoxWithType<MB_OK>;
-using TtMessageBoxOkCancel         = TtMessageBoxWithType<MB_OKCANCEL>;
-using TtMessageBoxRetryCancel      = TtMessageBoxWithType<MB_RETRYCANCEL>;
-using TtMessageBoxYesNo            = TtMessageBoxWithType<MB_YESNO>;
-using TtMessageBoxYesNoCancel      = TtMessageBoxWithType<MB_YESNOCANCEL>;
-using TtMessageBoxAbortRetryIgnore = TtMessageBoxWithType<MB_ABORTRETRYIGNORE>;
+// å›ä∑ê´ÇÃà◊
+using TtMessageBoxOk               = TtMessageBox::Ok;
+using TtMessageBoxOkCancel         = TtMessageBox::OkCancel;
+using TtMessageBoxRetryCancel      = TtMessageBox::RetryCancel;
+using TtMessageBoxYesNo            = TtMessageBox::YesNo;
+using TtMessageBoxYesNoCancel      = TtMessageBox::YesNoCancel;
+using TtMessageBoxAbortRetryIgnore = TtMessageBox::AbortRetryIgnore;

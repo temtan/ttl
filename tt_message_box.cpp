@@ -8,104 +8,61 @@
 #pragma comment(lib, "user32.lib")
 
 
-// -- TtMessageBox -------------------------------------------------------
-TtMessageBox::TtMessageBox( unsigned int type,
-                            const std::string& message,
-                            const std::string& caption,
-                            unsigned int       icon ) :
+// -- TtMessageBox::Origin -----------------------------------------------
+TtMessageBox::Origin::Origin( unsigned int type, unsigned int icon ) :
 type_( type ),
-message_( message ),
-caption_( caption ),
 icon_( icon ),
 default_button_( TtMessageBox::DefaultButton::FIRST )
 {
 }
 
 unsigned int
-TtMessageBox::GetType( void ) const
+TtMessageBox::Origin::GetType( void ) const
 {
   return type_;
 }
 
-const std::string&
-TtMessageBox::GetMessage( void ) const
-{
-  return message_;
-}
-
-void
-TtMessageBox::SetMessage( const std::string& message )
-{
-  message_.assign( message );
-}
-
-void
-TtMessageBox::AppendMessage( const std::string& message )
-{
-  message_.append( message );
-}
-
-TtString::Appender
-TtMessageBox::AppendMessage( void )
-{
-  return TtString::Appender( message_ );
-}
-
-const std::string&
-TtMessageBox::GetCaption( void ) const
-{
-  return caption_;
-}
-
-void
-TtMessageBox::SetCaption( const std::string& caption )
-{
-  caption_.assign( caption );
-}
-
 unsigned int
-TtMessageBox::GetIcon( void ) const
+TtMessageBox::Origin::GetIcon( void ) const
 {
   return icon_;
 }
 
 void
-TtMessageBox::SetIcon( unsigned int icon )
+TtMessageBox::Origin::SetIcon( unsigned int icon )
 {
   icon_ = icon;
 }
 
 unsigned int
-TtMessageBox::GetDefaultButton( void ) const
+TtMessageBox::Origin::GetDefaultButton( void ) const
 {
   return default_button_;
 }
 
 void
-TtMessageBox::SetDefaultButton( unsigned int button )
+TtMessageBox::Origin::SetDefaultButton( unsigned int button )
 {
   default_button_ = button;
 }
 
 int
-TtMessageBox::ShowDialog( void )
+TtMessageBox::Origin::ShowDialog( void )
 {
-  return ::MessageBox( nullptr, message_.c_str(), caption_.c_str(),
-                       type_ | icon_ | default_button_ );
+  return this->ShowDialog( TtExtraordinarilyWindow::Null );
 }
 
 
-
-std::map<DWORD, TtMessageBox*>
-TtMessageBox::hook_table;
+std::map<DWORD, TtMessageBox::Origin*>
+TtMessageBox::Origin::hook_table;
 
 std::map<DWORD, WNDPROC>
-TtMessageBox::procedure_table;
+TtMessageBox::Origin::procedure_table;
 
 LRESULT CALLBACK
-TtMessageBox::Hook( int code, WPARAM w_param, LPARAM l_param )
+TtMessageBox::Origin::Hook( int code, WPARAM w_param, LPARAM l_param )
 {
-  TtMessageBox* box = hook_table[TtThread::GetCurrentThreadID()];
+  TtMessageBox::Origin* box = hook_table[TtThread::GetCurrentThreadID()];
   const CWPRETSTRUCT* p = reinterpret_cast<const CWPRETSTRUCT*>( l_param );
 
   if ( p->message == WM_NCCREATE ) {
@@ -118,21 +75,23 @@ TtMessageBox::Hook( int code, WPARAM w_param, LPARAM l_param )
 }
 
 LRESULT CALLBACK
-TtMessageBox::Procedure( HWND handle, UINT msg, WPARAM w_param, LPARAM l_param )
+TtMessageBox::Origin::Procedure( HWND handle, UINT msg, WPARAM w_param, LPARAM l_param )
 {
-  TtMessageBox* box  = hook_table[TtThread::GetCurrentThreadID()];
-  WNDPROC       proc = procedure_table[TtThread::GetCurrentThreadID()];
+  TtMessageBox::Origin* box = hook_table[TtThread::GetCurrentThreadID()];
+  WNDPROC proc = procedure_table[TtThread::GetCurrentThreadID()];
 
   LRESULT ret = ::CallWindowProc( proc, handle, msg, w_param, l_param );
   if ( msg == WM_INITDIALOG ) {
-    ::SetWindowLongPtr( handle, GWLP_WNDPROC, ULONG_PTR( proc ) );
-    TtExtraordinarilyWindow( handle, *(box->parent_) ).SetCenterRelativeToParent();
+    if ( box->parent_->GetHandle() ) {
+      ::SetWindowLongPtr( handle, GWLP_WNDPROC, ULONG_PTR( proc ) );
+      TtExtraordinarilyWindow( handle, *(box->parent_) ).SetCenterRelativeToParent();
+    }
   }
   return ret;
 }
 
 int
-TtMessageBox::ShowDialog( TtWindow& parent )
+TtMessageBox::Origin::ShowDialog( TtWindow& parent )
 {
   hook_ = ::SetWindowsHookEx( WH_CALLWNDPROCRET,
                               Hook,
@@ -140,16 +99,95 @@ TtMessageBox::ShowDialog( TtWindow& parent )
                               TtThread::GetCurrentThreadID() );
   parent_ = &parent;
   hook_table[TtThread::GetCurrentThreadID()] = this;
-  return ::MessageBox( parent.GetHandle(), message_.c_str(), caption_.c_str(),
-                       type_ | icon_ | default_button_ );
+  return this->CallSystemCall();
 }
 
 
+// -- TtMessageBox::Base -------------------------------------------------
+template <class STRING_TYPE>
+TtMessageBox::Base<STRING_TYPE>::Base( unsigned int       type,
+                                       const STRING_TYPE& message,
+                                       const STRING_TYPE& caption,
+                                       unsigned int       icon ) :
+Origin( type, icon ),
+message_( message ),
+caption_( caption )
+{
+}
+
+template <class STRING_TYPE>
+const STRING_TYPE&
+TtMessageBox::Base<STRING_TYPE>::GetMessage( void ) const
+{
+  return message_;
+}
+
+template <class STRING_TYPE>
+void
+TtMessageBox::Base<STRING_TYPE>::SetMessage( const STRING_TYPE& message )
+{
+  message_.assign( message );
+}
+
+template <class STRING_TYPE>
+void
+TtMessageBox::Base<STRING_TYPE>::AppendMessage( const STRING_TYPE& message )
+{
+  message_.append( message );
+}
+
+template <class STRING_TYPE>
+TtString::Appender<STRING_TYPE>
+TtMessageBox::Base<STRING_TYPE>::AppendMessage( void )
+{
+  return TtString::Appender( message_ );
+}
+
+template <class STRING_TYPE>
+const STRING_TYPE&
+TtMessageBox::Base<STRING_TYPE>::GetCaption( void ) const
+{
+  return caption_;
+}
+
+template <class STRING_TYPE>
+void
+TtMessageBox::Base<STRING_TYPE>::SetCaption( const STRING_TYPE& caption )
+{
+  caption_.assign( caption );
+}
+
+
+template <>
+int
+TtMessageBox::Base<std::string>::CallSystemCall( void )
+{
+  return ::MessageBox( parent_->GetHandle(), message_.c_str(), caption_.c_str(),
+                       type_ | icon_ | default_button_ );
+}
+
+template <>
+int
+TtMessageBox::Base<std::wstring>::CallSystemCall( void )
+{
+  return ::MessageBoxW( parent_->GetHandle(), message_.c_str(), caption_.c_str(),
+                       type_ | icon_ | default_button_ );
+}
+
+template class TtMessageBox::Base<std::string>;
+template class TtMessageBox::Base<std::wstring>;
+
 #ifdef TT_MAKE_TEMPLATE_INSTANCE_
-template class TtMessageBoxWithType<MB_OK>;
-template class TtMessageBoxWithType<MB_OKCANCEL>;
-template class TtMessageBoxWithType<MB_RETRYCANCEL>;
-template class TtMessageBoxWithType<MB_YESNO>;
-template class TtMessageBoxWithType<MB_YESNOCANCEL>;
-template class TtMessageBoxWithType<MB_ABORTRETRYIGNORE>;
+template class TtMessageBox::ANSI::Ok;
+template class TtMessageBox::ANSI::OkCancel;
+template class TtMessageBox::ANSI::RetryCancel;
+template class TtMessageBox::ANSI::YesNo;
+template class TtMessageBox::ANSI::YesNoCancel;
+template class TtMessageBox::ANSI::AbortRetryIgnore;
+template class TtMessageBox::UTF16::Ok;
+template class TtMessageBox::UTF16::OkCancel;
+template class TtMessageBox::UTF16::RetryCancel;
+template class TtMessageBox::UTF16::YesNo;
+template class TtMessageBox::UTF16::YesNoCancel;
+template class TtMessageBox::UTF16::AbortRetryIgnore;
 #endif
