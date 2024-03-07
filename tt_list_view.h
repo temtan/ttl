@@ -277,6 +277,8 @@ public:
     } );
   }
 
+  void SortByIndex( std::function<int ( unsigned int x, unsigned int y )> function, bool ascending );
+
   void ClearItems( void );
   void ClearColumns( void );
 };

@@ -823,6 +823,16 @@ TtListView::SortPrimitive( CompareFunction compare )
   }
 }
 
+void
+TtListView::SortByIndex( std::function<int ( unsigned int x, unsigned int y )> function, bool ascending )
+{
+  CompareFunction compare = [function, ascending] ( LPARAM x, LPARAM y ) -> int {
+    return (ascending ? 1 : -1) * function( static_cast<unsigned int>( x ), static_cast<unsigned int>( y ) );
+  };
+  if ( ListView_SortItemsEx( handle_, TtListView::CompareFunctionForTTL, &compare ) == FALSE ) {
+    throw TT_WIN_SYSTEM_CALL_EXCEPTION( REAL_FUNC_NAME_OF( ListView_SortItemsEx ) );
+  }
+}
 
 
 void
