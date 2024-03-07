@@ -38,20 +38,18 @@ thread_id_( 0 )
 
 TtThread::~TtThread()
 {
-  if ( thread_handle_ != INVALID_HANDLE_VALUE ) {
-    ::CloseHandle( thread_handle_ );
-  }
+  this->Close();
 }
 
 
 void
-TtThread::Start( void )
+TtThread::Open( bool immediately_start )
 {
-  if ( thread_handle_ != INVALID_HANDLE_VALUE ) {
+  if ( this->IsValid() ) {
     throw TtInvalidOperationException( typeid( *this ) );
   }
   unsigned int tmp_id;
-  uintptr_t tmp_handle = _beginthreadex( nullptr, 0, EntryPoint, this, 0, &tmp_id );
+  uintptr_t tmp_handle = _beginthreadex( nullptr, 0, EntryPoint, this, immediately_start ? 0 : CREATE_SUSPENDED, &tmp_id );
   if ( tmp_handle == 0 ) {
     throw TT_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( _beginthreadex ), errno );
   }
@@ -60,10 +58,37 @@ TtThread::Start( void )
 }
 
 
+unsigned int
+TtThread::Suspend( void )
+{
+  if ( this->IsInvalid() ) {
+    throw TtInvalidOperationException( typeid( *this ) );
+  }
+  DWORD ret = ::SuspendThread( thread_handle_ );
+  if ( ret == -1 ) {
+    throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::SuspendThread ) );
+  }
+  return ret;
+}
+
+unsigned int
+TtThread::Resume( void )
+{
+  if ( this->IsInvalid() ) {
+    throw TtInvalidOperationException( typeid( *this ) );
+  }
+  DWORD ret = ::ResumeThread( thread_handle_ );
+  if ( ret == -1 ) {
+    throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::ResumeThread ) );
+  }
+  return ret;
+}
+
+
 void
 TtThread::Join( void )
 {
-  if ( thread_handle_ == INVALID_HANDLE_VALUE ) {
+  if ( this->IsInvalid() ) {
     throw TtInvalidOperationException( typeid( *this ) );
   }
   if ( ::WaitForSingleObject( thread_handle_, INFINITE ) != WAIT_OBJECT_0 ) {
@@ -75,16 +100,42 @@ TtThread::Join( void )
 void
 TtThread::Terminate( DWORD exit_code )
 {
+  if ( this->IsInvalid() ) {
+    throw TtInvalidOperationException( typeid( *this ) );
+  }
   if ( ::TerminateThread( thread_handle_, exit_code ) == 0 ) {
     throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::TerminateThread ) );
   }
+}
+
+void
+TtThread::Close( void )
+{
+  if ( this->IsValid() ) {
+    ::CloseHandle( thread_handle_ );
+    thread_handle_ = INVALID_HANDLE_VALUE;
+    thread_id_ = 0;
+  }
+}
+
+
+bool
+TtThread::IsValid( void ) const
+{
+  return thread_handle_ != INVALID_HANDLE_VALUE;
+}
+
+bool
+TtThread::IsInvalid( void ) const
+{
+  return NOT( this->IsValid() );
 }
 
 
 bool
 TtThread::HasExited( void ) const
 {
-  if ( thread_handle_ == INVALID_HANDLE_VALUE ) {
+  if ( this->IsInvalid() ) {
     throw TtInvalidOperationException( typeid( *this ) );
   }
   DWORD ret;
@@ -98,7 +149,7 @@ TtThread::HasExited( void ) const
 DWORD
 TtThread::GetExitCode( void ) const
 {
-  if ( thread_handle_ == INVALID_HANDLE_VALUE ) {
+  if ( this->IsInvalid() ) {
     throw TtInvalidOperationException( typeid( *this ) );
   }
   DWORD ret;
@@ -115,7 +166,7 @@ TtThread::GetExitCode( void ) const
 DWORD
 TtThread::GetThreadID( void ) const
 {
-  if ( thread_handle_ == INVALID_HANDLE_VALUE ) {
+  if ( this->IsInvalid() ) {
     throw TtInvalidOperationException( typeid( *this ) );
   }
   return thread_id_;
@@ -140,9 +191,15 @@ function_( [function] ( void ) -> unsigned int { function(); return 0; } )
 }
 
 
+std::function<unsigned int ( void )>
+TtFunctionThread::GetFunction( void ) const
+{
+  return function_;
+}
+
+
 unsigned int
 TtFunctionThread::Run( void )
 {
   return function_();
 }
-

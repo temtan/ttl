@@ -21,10 +21,15 @@ public:
 
   virtual ~TtThread();
 
-  void Start( void );
+  void Open( bool immediately_start = true );
+  unsigned int Suspend( void );
+  unsigned int Resume( void );
   void Join( void );
   void Terminate( DWORD exit_code );
+  void Close( void );
 
+  bool IsValid( void ) const;
+  bool IsInvalid( void ) const;
   bool HasExited( void ) const;
 
   DWORD GetExitCode( void ) const;
@@ -45,6 +50,8 @@ class TtFunctionThread : public TtThread {
 public:
   explicit TtFunctionThread( std::function<unsigned int ( void )> function );
   explicit TtFunctionThread( std::function<void ( void )> function );
+
+  std::function<unsigned int ( void )> GetFunction( void ) const;
 
 private:
   virtual unsigned int Run( void ) override;
