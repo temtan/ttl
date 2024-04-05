@@ -142,7 +142,7 @@ void
 TtWindow::OverrideWindowProcedureByTTL( void )
 {
   window_procedure_super_ = reinterpret_cast<WNDPROC>( this->GetWindowLongPtr( GWLP_WNDPROC ) );
-  this->SetWindowLongPtr( GCLP_WNDPROC, reinterpret_cast<ULONG_PTR>( TtWindow::WindowProcedureForTTL ) );
+  this->SetWindowLongPtr( GWLP_WNDPROC, reinterpret_cast<ULONG_PTR>( TtWindow::WindowProcedureForTTL ) );
   if ( WINDOW_TABLE.Find( handle_ ) == nullptr ) {
     WINDOW_TABLE.Register( *this );
   }
