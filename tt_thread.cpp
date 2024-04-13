@@ -180,6 +180,12 @@ TtThread::GetThreadHandle( void ) const
 
 
 // -- TtFunctionThread ---------------------------------------------------
+TtFunctionThread::TtFunctionThread( void ) :
+function_( nullptr )
+{
+}
+
+
 TtFunctionThread::TtFunctionThread( std::function<unsigned int ( void )> function ) :
 function_( function )
 {
@@ -190,6 +196,18 @@ function_( [function] ( void ) -> unsigned int { function(); return 0; } )
 {
 }
 
+void
+TtFunctionThread::SetFunction( std::function<unsigned int ( void )> function )
+{
+  function_ = function;
+}
+
+void
+TtFunctionThread::SetFunction( std::function<void ( void )> function )
+{
+  function_ = [function] ( void ) -> unsigned int { function(); return 0; };
+}
+
 
 std::function<unsigned int ( void )>
 TtFunctionThread::GetFunction( void ) const
@@ -198,8 +216,74 @@ TtFunctionThread::GetFunction( void ) const
 }
 
 
+void
+TtFunctionThread::Open( bool immediately_start )
+{
+  if ( NOT( function_ ) ) {
+    throw TtInvalidOperationException( typeid( *this ) );
+  }
+  this->TtThread::Open( immediately_start );
+}
+
+
 unsigned int
 TtFunctionThread::Run( void )
 {
   return function_();
+}
+
+
+// -- TtThreadPool -------------------------------------------------------
+TtThreadPool::TtThreadPool( void ) :
+pool_( ::CreateThreadpool( NULL ) )
+{
+  InitializeThreadpoolEnvironment( &callback_environ_ );
+
+  ::SetThreadpoolThreadMaximum( pool_, 1 );
+  auto ret = ::SetThreadpoolThreadMinimum( pool_, 1 );
+  if ( NOT( ret ) ) {
+    ::CloseThreadpool( pool_ );
+    throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::SetThreadpoolThreadMinimum ) );
+  }
+
+  cleanup_group_ = ::CreateThreadpoolCleanupGroup();
+  if ( NOT( cleanup_group_ ) ) {
+    ::CloseThreadpool( pool_ );
+    throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::CreateThreadpoolCleanupGroup ) );
+  }
+
+  ::SetThreadpoolCallbackPool( &callback_environ_, pool_ );
+  ::SetThreadpoolCallbackCleanupGroup( &callback_environ_, cleanup_group_, NULL );
+}
+
+
+TtThreadPool::~TtThreadPool( void )
+{
+  this->Close();
+}
+
+
+void
+TtThreadPool::StartWorkDirect( DirectFunction function, void* parameter )
+{
+  auto work = ::CreateThreadpoolWork( function, parameter, &callback_environ_ );
+  if ( NOT( work ) ) {
+    throw TT_WIN_SYSTEM_CALL_EXCEPTION( FUNC_NAME_OF( ::CreateThreadpoolWork ) );
+  }
+  ::SubmitThreadpoolWork( work );
+}
+
+
+void
+TtThreadPool::WaitAndCloseAllThreads( void )
+{
+  ::CloseThreadpoolCleanupGroupMembers( cleanup_group_, FALSE, NULL );
+}
+
+
+void
+TtThreadPool::Close( void )
+{
+  ::CloseThreadpoolCleanupGroup( cleanup_group_ );
+  ::CloseThreadpool( pool_ );
 }
